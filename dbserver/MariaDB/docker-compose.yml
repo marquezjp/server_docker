@@ -1,0 +1,34 @@
+version: '3.3'
+
+services:
+  db:
+    image: mariadb
+    container_name: MariaDB
+    hostname: dbserver
+    restart: always
+    ports:
+      - 3316:3306
+    environment:
+      - MARIADB_ROOT_PASSWORD=MariaDB2023
+      - MYSQL_DATABASE=mydb
+    volumes:
+      - P:\DBServer\MariaDB\Dados:/var/lib/mysql
+    networks:
+      - db-network
+
+  myadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - 88:80
+    environment:
+      - PMA_HOST=db
+      - PMA_ARBITRARY=1
+    depends_on:
+      - db
+    networks:
+      - db-network
+
+networks: 
+  db-network:
+    driver: bridge

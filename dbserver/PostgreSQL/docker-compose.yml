@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    container_name: PostgreSQL
+    hostname: dbserver
+    environment:
+      POSTGRES_PASSWORD: "Postgres2023"
+    ports:
+      - "5432:5432"
+    volumes:
+      - P:\DBServer\PostgreSQL\Dados:/var/lib/postgresql/data
+    networks:
+      - db-network
+      
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "joaopaulo.marquez@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "Postgres2023"
+    ports:
+      - "88:80"
+    volumes:
+      - P:\DBServer\PostgreSQL\pgAdmin:/var/lib/pgadmin
+    depends_on:
+      - db
+    networks:
+      - db-network
+
+networks: 
+  db-network:
+    driver: bridge

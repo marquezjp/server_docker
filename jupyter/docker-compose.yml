@@ -1,0 +1,20 @@
+services:
+  jupyter:
+    image: quay.io/jupyter/datascience-notebook
+    container_name: jupyter
+    runtime: nvidia
+    hostname: jupyter
+    restart: always
+    ports:
+      - 10000:8888
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUDA_DEVICE_ORDER=PCI_BUS_ID
+    volumes:
+      - ./work:/home/jovyan
+    networks:
+      - proxy-network
+
+networks:
+  proxy-network:
+    external: true

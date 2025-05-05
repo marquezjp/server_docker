@@ -1,0 +1,16 @@
+version: '3.3'
+
+services:
+  db:
+    image: container-registry.oracle.com/database/express
+    container_name: Oracle
+    hostname: dbserver
+    restart: always
+    ports:
+      - 1521:1521
+      - 8080:8080
+      - 5500:5500
+    environment:
+      - ORACLE_PWD=Oracle2023
+    volumes:
+      - P:\DBServer\Oracle\Express:/opt/oracle/oradata
