@@ -11,34 +11,6 @@ services:
     networks:
       - proxy-network
 
-  nginx1:
-    image: nginx
-    ports:
-      - 81:80
-    volumes:
-      - ./html1:/usr/share/nginx/html:ro
-    networks:
-      - proxy-network
-
-  nginx2:
-    image: nginx
-    ports:
-      - 82:80
-    volumes:
-      - ./html2:/usr/share/nginx/html:ro
-    networks:
-      - proxy-network
-
-  nginx3:
-    image: nginx
-    ports:
-      - 83:80
-    volumes:
-      - ./html3:/usr/share/nginx/html:ro
-    networks:
-      - proxy-network
-
 networks:
   proxy-network:
     external: true
-
