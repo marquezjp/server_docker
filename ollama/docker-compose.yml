@@ -2,31 +2,37 @@ services:
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
+    hostname: ollama
+    restart: unless-stopped
     runtime: nvidia
     ports:
       - "11434:11434"
     volumes:
       - ollama-data:/root/.ollama
-    restart: unless-stopped
     networks:
       - proxy-network
 
   ollama-webui:
     image: ghcr.io/ollama-webui/ollama-webui:main
     container_name: ollama-webui
+    hostname: ollama-webui
+    restart: unless-stopped
     ports:
       - "3000:8080"
     environment:
       - OLLAMA_API_BASE_URL=http://ollama:11434/api
+      - 'WEBUI_SECRET_KEY='
       - DEFAULT_MODELS=llama3
     depends_on:
       - ollama
-    restart: unless-stopped
+    volumes:
+      - openwebui-data:/app/backend/data
     networks:
       - proxy-network
 
 volumes:
   ollama-data:
+  openwebui-data:
 
 networks:
  proxy-network:
