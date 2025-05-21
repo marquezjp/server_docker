@@ -5,7 +5,7 @@ services:
     hostname: sigrhdb
     restart: always
     ports:
-      - 1521:1521
+      - 1522:1521
       - 8080:8080
       - 5500:5500
     environment:
