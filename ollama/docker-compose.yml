@@ -18,7 +18,7 @@ services:
     hostname: ollama-webui
     restart: unless-stopped
     ports:
-      - "3000:8080"
+      - "3040:8080"
     environment:
       - OLLAMA_API_BASE_URL=http://ollama:11434/api
       - 'WEBUI_SECRET_KEY='
