@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: nginx
+    image: nginx:latest
     container_name: nginx
     hostname: nginx
     restart: unless-stopped
@@ -120,7 +120,7 @@ services:
       - proxy-network
 
   apcupsd:
-    image: jangrewe/apcupsd-exporter
+    image: jangrewe/apcupsd-exporter:latest
     container_name: apcupsd
     hostname: apcupsd
     restart: unless-stopped
@@ -133,12 +133,12 @@ services:
     hostname: noip-duc
     restart: unless-stopped
     env_file:
-      - .env
       - noip/noip-duc.env
     networks:
       - proxy-network
 
 volumes:
+  portainer-data:
   prometheus-data:
   grafana-data:
 
