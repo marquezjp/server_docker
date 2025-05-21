@@ -1,0 +1,23 @@
+services:
+  sigrhdb:
+    image: container-registry.oracle.com/database/enterprise
+    container_name: sigrhdb
+    hostname: sigrhdb
+    restart: always
+    ports:
+      - 1521:1521
+      - 8080:8080
+      - 5500:5500
+    environment:
+      - ORACLE_PWD=jquest
+      - ORACLE_SID=SIGRH
+      - ORACLE_PDB=SIGRHDB1
+    volumes:
+      - /var/lib/docker/volumes/sigrh-data/SIGRH-RR:/opt/oracle/oradata
+      - /var/lib/docker/volumes/sigrh-data/SIGRH-RR/DUMP:/opt/oracle/oradata/datapump
+    networks:
+      - proxy-network
+
+networks:
+ proxy-network:
+   external: true

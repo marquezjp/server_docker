@@ -1,0 +1,21 @@
+services:
+
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    restart: always
+    command: redis-server --requirepass Redis2020
+    ports:
+        - "6379:6379"
+    volumes:
+      - redis-data:/var/lib/redis
+    networks:
+      - proxy-network
+      
+volumes:
+  redis-data:
+
+networks:
+ proxy-network:
+   external: true

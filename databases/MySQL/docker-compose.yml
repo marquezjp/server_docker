@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql
+    container_name: mysql
+    hostname: mysql
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=jquest
+      - MYSQL_DATABASE=jotapedb
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - proxy-network
+
+volumes:
+  mysql-data:
+
+networks:
+ proxy-network:
+   external: true

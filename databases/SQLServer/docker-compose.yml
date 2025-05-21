@@ -1,0 +1,25 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    container_name: sqlserver
+    hostname: sqlserver
+    restart: always
+    environment:
+      - MSSQL_SA_PASSWORD=jquest
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./log:/var/opt/mssql/log
+      - ./secrets:/var/opt/mssql/secrets
+      - ./dumps:/var/opt/mssql/dumps
+      - sqlserver-data:/var/opt/mssql/data
+    networks:
+      - proxy-network
+
+volumes:
+  sqlserver-data:
+
+networks:
+ proxy-network:
+   external: true

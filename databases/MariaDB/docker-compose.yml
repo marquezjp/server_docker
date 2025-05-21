@@ -1,0 +1,22 @@
+services:
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    hostname: mariadb
+    restart: always
+    ports:
+      - 3316:3306
+    environment:
+      - MARIADB_ROOT_PASSWORD=jquest
+      - MYSQL_DATABASE=jotapedb
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - proxy-network
+
+volumes:
+  mariadb-data:
+
+networks:
+ proxy-network:
+   external: true

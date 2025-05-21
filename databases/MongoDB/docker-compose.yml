@@ -1,23 +1,21 @@
 # Use root/example as user/password credentials
 # mongodb://root:example@localhost:27017
-version: '3.1'
-
 services:
 
   mongo:
     image: mongo
-    container_name: MongoDB
-    hostname: dbserver
+    container_name: mongo
+    hostname: mongo
     restart: always
     ports:
         - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_PASSWORD: jquest
     volumes:
-      - P:\DBServer\MongoDB\Dados:/data/db
+      - mongo-data:/data/db
     networks:
-      - mongo-network
+      - proxy-network
 
   mongo-express:
     image: mongo-express
@@ -25,15 +23,19 @@ services:
     ports:
       - 88:8081
     environment:
-      ME_CONFIG_BASICAUTH_USERNAME: mongodb
-      ME_CONFIG_BASICAUTH_PASSWORD: MongoDB2023
+      ME_CONFIG_BASICAUTH_USERNAME: marquezjp
+      ME_CONFIG_BASICAUTH_PASSWORD: jquest
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_ADMINPASSWORD: jquest
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
     links:
       - mongo
     networks:
-      - mongo-network
+      - proxy-network
+
+volumes:
+  mongo-data:
 
 networks:
-  mongo-network:
+ proxy-network:
+   external: true
