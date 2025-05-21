@@ -1,4 +1,4 @@
-# Conexão com SIGRHDB (Oracle)
+# Conexão com Banco SIGRHDB (Oracle)
 
 - **Porta**: 1521
 - **SID/Service Name**: SIGRH

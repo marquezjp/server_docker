@@ -1,6 +1,6 @@
 # Conexão com PostgreSQL
 
-- **Porta**: 5432
+- **Porta**: 5433
 - **Nome do Banco**: postgres_db
 - **String JDBC**:
   ```

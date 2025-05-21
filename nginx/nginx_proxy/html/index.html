@@ -39,7 +39,7 @@
           <div class="card-body">
             <h5 class="card-title">Cockpit</h5>
             <p class="card-text">Gerenciamento do Sistema</p>
-            <a href="http://cockpit.mrqz.me:9090/" class="btn btn-primary" target="_blank">Acessar</a>
+            <a href="https://cockpit.mrqz.me/" class="btn btn-primary" target="_blank">Acessar</a>
           </div>
         </div>
       </div>
@@ -49,7 +49,27 @@
           <div class="card-body">
             <h5 class="card-title">Portainer</h5>
             <p class="card-text">Gerenciamento de Containers</p>
-            <a href="http://portainer.mrqz.me:9000/" class="btn btn-primary" target="_blank">Acessar</a>
+            <a href="https://portainer.mrqz.me/" class="btn btn-primary" target="_blank">Acessar</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="card service-card text-center h-100">
+          <div class="card-body">
+            <h5 class="card-title">Grafana</h5>
+            <p class="card-text">Painel de Monitoramento</p>
+            <a href="https://grafana.mrqz.me/" class="btn btn-primary" target="_blank">Acessar</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="card service-card text-center h-100">
+          <div class="card-body">
+            <h5 class="card-title">Prometheus</h5>
+            <p class="card-text">Monitoramento e Alerta para Ambientes Modernos</p>
+            <a href="https://prometheus.mrqz.me/" class="btn btn-primary" target="_blank">Acessar</a>
           </div>
         </div>
       </div>
@@ -59,7 +79,7 @@
           <div class="card-body">
             <h5 class="card-title">Ollama</h5>
             <p class="card-text">Interface para LLMs</p>
-            <a href="http://ollama.mrqz.me:3000/" class="btn btn-primary" target="_blank">Acessar</a>
+            <a href="https://ollama.mrqz.me/" class="btn btn-primary" target="_blank">Acessar</a>
           </div>
         </div>
       </div>
@@ -69,7 +89,7 @@
           <div class="card-body">
             <h5 class="card-title">Jupyter Lab</h5>
             <p class="card-text">Ambiente Interativo Python</p>
-            <a href="http://jupyter.mrqz.me:8888/" class="btn btn-primary" target="_blank">Acessar</a>
+            <a href="https://jupyter.mrqz.me/" class="btn btn-primary" target="_blank">Acessar</a>
           </div>
         </div>
       </div>
@@ -80,12 +100,12 @@
       <h2 class="text-center mb-4">Documentação de Conexão com Bancos de Dados</h2>
       <div class="accordion" id="dbDocs">
         <div class="accordion-item">
-          <h2 class="accordion-header" id="headingOracle">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOracle">
+          <h2 class="accordion-header" id="headingSIGRH">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSIGRH">
               Banco SIGRH (Oracle)
             </button>
           </h2>
-          <div id="collapseOracle" class="accordion-collapse collapse" data-bs-parent="#dbDocs">
+          <div id="collapseSIGRH" class="accordion-collapse collapse" data-bs-parent="#dbDocs">
             <div class="accordion-body">
               <p>String de conexão:</p>
               <pre><code>jdbc:oracle:thin:@//sigrhdb.mrqz.me:1521/SIGRH</code></pre>
@@ -95,18 +115,18 @@ oracle:
   usuario: sigrh
   senha: sigrh
               </code></pre>
-              <a href="oracle_conexao.md" class="btn btn-outline-primary" download>📄 Baixar Oracle.md</a>
+              <a href="sigrh_conexao.md" class="btn btn-outline-primary" download>📄 Baixar SIGRHDB.md</a>
             </div>
           </div>
         </div>
 
         <div class="accordion-item">
-          <h2 class="accordion-header" id="headingSQLServer">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSQLServer">
+          <h2 class="accordion-header" id="headingSEGAD">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSEGAD">
               Banco SEGAD (SQL Server)
             </button>
           </h2>
-          <div id="collapseSQLServer" class="accordion-collapse collapse" data-bs-parent="#dbDocs">
+          <div id="collapseSEGAD" class="accordion-collapse collapse" data-bs-parent="#dbDocs">
             <div class="accordion-body">
               <p>String de conexão:</p>
               <pre><code>jdbc:sqlserver://;serverName=segaddb.mrqz.me;</code></pre>
@@ -116,10 +136,32 @@ sqlserver:
   usuario: sa
   senha: SQLServer2023
               </code></pre>
-              <a href="sqlserver_conexao.md" class="btn btn-outline-primary" download>📄 Baixar SQLServer.md</a>
+              <a href="segad_conexao.md" class="btn btn-outline-primary" download>📄 Baixar SEGADDB.md</a>
             </div>
           </div>
         </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingFOPAG">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFOPAG">
+              Banco FOPAG (PostgreSQL)
+            </button>
+          </h2>
+          <div id="collapseFOPAG" class="accordion-collapse collapse" data-bs-parent="#dbDocs">
+            <div class="accordion-body">
+              <p>String de conexão:</p>
+              <pre><code>jdbc:postgresql://fopag.mrqz.me:5432/postgres</code></pre>
+              <p>Credenciais:</p>
+              <pre><code>
+postgresql:
+  usuario: postgres
+  senha: jquest
+              </code></pre>
+              <a href="fopag_conexao.md" class="btn btn-outline-primary" download>📄 Baixar FOPAGDB.md</a>
+            </div>
+          </div>
+        </div>
+
 
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingPostgreSQL">
@@ -130,7 +172,7 @@ sqlserver:
           <div id="collapsePostgreSQL" class="accordion-collapse collapse" data-bs-parent="#dbDocs">
             <div class="accordion-body">
               <p>String de conexão:</p>
-              <pre><code>jdbc:postgresql://postgres.mrqz.me:5432/postgres_db</code></pre>
+              <pre><code>jdbc:postgresql://postgres.mrqz.me:5433/postgres_db</code></pre>
               <p>Credenciais:</p>
               <pre><code>
 postgresql:
@@ -141,6 +183,7 @@ postgresql:
             </div>
           </div>
         </div>
+
       </div>
     </section>
   </main>

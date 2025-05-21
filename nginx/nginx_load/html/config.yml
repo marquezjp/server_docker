@@ -1,0 +1,11 @@
+oracle:
+  usuario: seu_usuario
+  senha: sua_senha
+
+postgresql:
+  usuario: seu_usuario
+  senha: sua_senha
+
+sqlserver:
+  usuario: seu_usuario
+  senha: sua_senha

@@ -1,4 +1,4 @@
-# Conexão com SQL Server
+# Conexão com Banco SEGADDB (SQL Server)
 
 - **Porta**: 1433
 - **Nome do Banco**: 
@@ -12,5 +12,5 @@
 ```yaml
 sqlserver:
   usuario: sa
-  senha: SQLServer2023
+  senha: jquest
 ```
