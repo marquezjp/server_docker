@@ -1,0 +1,13 @@
+CREATE SCHEMA fp;
+CREATE SCHEMA prot2;
+CREATE SCHEMA pss;
+
+CREATE ROLE grupopessoa;
+CREATE ROLE gruposistema;
+CREATE ROLE devel;
+CREATE ROLE siimm;
+CREATE ROLE sergio;
+CREATE ROLE internet;
+CREATE ROLE esic;
+CREATE ROLE gruposaude;
+CREATE ROLE saude;

@@ -1,0 +1,26 @@
+services:
+  fopag:
+    image: postgres
+    container_name: fopag
+    hostname: fopag
+    environment:
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=jquest
+     - POSTGRES_DB=postgres
+     - VIRTUAL_HOST=fopag.mrqz.me
+     - VIRTUAL_PORT=5432
+     - LETSENCRYPT_HOST=fopag.mrqz.me
+     - LETSENCRYPT_EMAIL=joaopaulo.marquez@gmail.com
+    ports:
+      - "5433:5432"
+    volumes:
+      - fopag-data:/var/lib/postgresql/data
+    networks:
+      - proxy-network
+
+volumes:
+  fopag-data:
+
+networks:
+ proxy-network:
+   external: true
