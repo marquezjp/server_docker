@@ -1,0 +1,19 @@
+services:
+  cloudbeaver:
+    image: dbeaver/cloudbeaver
+    container_name: cloudbeaver
+    hostname: cloudbeaver
+    restart: always
+    environment:
+      - CB_SERVER_NAME=cloudbeaver
+      - CB_SERVER_URL=dbeaver.mrqz.me
+      - CB_ADMIN_NAME=marquezjp
+      - CB_ADMIN_PASSWORD=jquest
+    ports:
+      - 3160:8978
+    networks:
+      - proxy-network
+
+networks:
+ proxy-network:
+   external: true
