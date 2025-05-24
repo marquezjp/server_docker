@@ -5,6 +5,12 @@ services:
     hostname: ollama
     restart: unless-stopped
     runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
     ports:
       - "11434:11434"
     volumes:
@@ -17,6 +23,13 @@ services:
     container_name: ollama-webui
     hostname: ollama-webui
     restart: unless-stopped
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
     ports:
       - "3040:8080"
     environment:
