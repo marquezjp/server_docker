@@ -1,0 +1,17 @@
+services:
+  dbgate:
+    image: dbgate/dbgate
+    container_name: dbgate
+    hostname: dbgate
+    restart: always
+    ports:
+      - 3150:3000
+    networks:
+      - proxy-network
+
+volumes:
+  mysql-data:
+
+networks:
+ proxy-network:
+   external: true

@@ -33,13 +33,13 @@
 
   <main class="container py-4">
     <div class="row g-4">
-      <!-- Cartões dos serviços -->
       <div class="col-md-6 col-lg-3">
         <div class="card service-card text-center h-100">
           <div class="card-body">
-            <h5 class="card-title">Cockpit</h5>
-            <p class="card-text">Gerenciamento do Sistema</p>
-            <a href="https://cockpit.mrqz.me/" class="btn btn-primary" target="_blank">Acessar</a>
+            <h5 class="card-title">Interface para LLMs</h5>
+            <a href="https://ollama.mrqz.me/" class="btn btn-primary" target="_blank">
+              <p class="card-text">Ollama</p>
+            </a>
           </div>
         </div>
       </div>
@@ -47,9 +47,10 @@
       <div class="col-md-6 col-lg-3">
         <div class="card service-card text-center h-100">
           <div class="card-body">
-            <h5 class="card-title">Portainer</h5>
-            <p class="card-text">Gerenciamento de Containers</p>
-            <a href="https://portainer.mrqz.me/" class="btn btn-primary" target="_blank">Acessar</a>
+            <h5 class="card-title">Ambiente Interativo Python</h5>
+            <a href="https://jupyter.mrqz.me/" class="btn btn-primary" target="_blank">
+              <p class="card-text">Jupyter Lab</p>
+            </a>
           </div>
         </div>
       </div>
@@ -57,9 +58,10 @@
       <div class="col-md-6 col-lg-3">
         <div class="card service-card text-center h-100">
           <div class="card-body">
-            <h5 class="card-title">Grafana</h5>
-            <p class="card-text">Painel de Monitoramento</p>
-            <a href="https://grafana.mrqz.me/" class="btn btn-primary" target="_blank">Acessar</a>
+            <h5 class="card-title">Database Manager</h5>
+            <a href="https://dbgate.mrqz.me/" class="btn btn-primary" target="_blank">
+              <p class="card-text">DBGate</p>
+            </a>
           </div>
         </div>
       </div>
@@ -67,9 +69,27 @@
       <div class="col-md-6 col-lg-3">
         <div class="card service-card text-center h-100">
           <div class="card-body">
-            <h5 class="card-title">Prometheus</h5>
-            <p class="card-text">Monitoramento e Alerta para Ambientes Modernos</p>
-            <a href="https://prometheus.mrqz.me/" class="btn btn-primary" target="_blank">Acessar</a>
+            <h5 class="card-title">Administrador do MongoDB</h5>
+            <a href="https://mongo.mrqz.me/" class="btn btn-primary" target="_blank">
+              <p class="card-text">Mongo Express</p>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div><br></div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="card service-card text-center h-100">
+          <div class="card-body">
+            <h5 class="card-title">Gerenciamento de Containers</h5>
+            <a href="https://portainer.mrqz.me/" class="btn btn-primary" target="_blank">
+              <p class="card-text">Portainer</p>
+            </a>
           </div>
         </div>
       </div>
@@ -77,9 +97,10 @@
       <div class="col-md-6 col-lg-3">
         <div class="card service-card text-center h-100">
           <div class="card-body">
-            <h5 class="card-title">Ollama</h5>
-            <p class="card-text">Interface para LLMs</p>
-            <a href="https://ollama.mrqz.me/" class="btn btn-primary" target="_blank">Acessar</a>
+            <h5 class="card-title">Painel de Monitoramento</h5>
+            <a href="https://grafana.mrqz.me/" class="btn btn-primary" target="_blank">
+              <p class="card-text">Grafana</p>
+            </a>
           </div>
         </div>
       </div>
@@ -87,12 +108,25 @@
       <div class="col-md-6 col-lg-3">
         <div class="card service-card text-center h-100">
           <div class="card-body">
-            <h5 class="card-title">Jupyter Lab</h5>
-            <p class="card-text">Ambiente Interativo Python</p>
-            <a href="https://jupyter.mrqz.me/" class="btn btn-primary" target="_blank">Acessar</a>
+            <h5 class="card-title">Gerenciamento do Sistema</h5>
+            <a href="https://cockpit.mrqz.me/" class="btn btn-primary" target="_blank">
+              <p class="card-text">Cockpit</p>
+            </a>
           </div>
         </div>
       </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="card service-card text-center h-100">
+          <div class="card-body">
+            <h5 class="card-title">Monitoramento e Alerta para Ambientes</h5>
+            <a href="https://prometheus.mrqz.me/" class="btn btn-primary" target="_blank">
+              <p class="card-text">Prometheus</p>
+            </a>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Documentação de conexão com bancos -->
@@ -180,6 +214,90 @@ postgresql:
   senha: jquest
               </code></pre>
               <a href="postgresql_conexao.md" class="btn btn-outline-primary" download>📄 Baixar PostgreSQL.md</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOracleEnterprise">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOracleEnterprise">
+              Oracle Enterprise
+            </button>
+          </h2>
+          <div id="collapseOracleEnterprise" class="accordion-collapse collapse" data-bs-parent="#dbDocs">
+            <div class="accordion-body">
+              <p>String de conexão:</p>
+              <pre><code>jdbc:oracle:thin:@//oracle.mrqz.me:1521/JOTAPE</code></pre>
+              <p>Credenciais:</p>
+              <pre><code>
+oracle:
+  usuario: system
+  senha: jquest
+              </code></pre>
+              <a href="oracleenterprise.md" class="btn btn-outline-primary" download>📄 Baixar OracleEnterprise.md</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingSQLServer">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSQLServer">
+              SQL Server
+            </button>
+          </h2>
+          <div id="collapseSQLServer" class="accordion-collapse collapse" data-bs-parent="#dbDocs">
+            <div class="accordion-body">
+              <p>String de conexão:</p>
+              <pre><code>jdbc:sqlserver://;serverName=sqlserver.mrqz.me;</code></pre>
+              <p>Credenciais:</p>
+              <pre><code>
+sqlserver:
+  usuario: sa
+  senha: jquest
+              </code></pre>
+              <a href="sqlserver.md" class="btn btn-outline-primary" download>📄 Baixar SQLServer.md</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingMySQL">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMySQL">
+              MySQL
+            </button>
+          </h2>
+          <div id="collapseMySQL" class="accordion-collapse collapse" data-bs-parent="#dbDocs">
+            <div class="accordion-body">
+              <p>String de conexão:</p>
+              <pre><code>jdbc:mysql://mysql.mrqz.me:3306/jotapedb;</code></pre>
+              <p>Credenciais:</p>
+              <pre><code>
+sqlserver:
+  usuario: root
+  senha: jquest
+              </code></pre>
+              <a href="mysql.md" class="btn btn-outline-primary" download>📄 Baixar MySQL.md</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingMariaDB">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMariaDB">
+              MariaDB
+            </button>
+          </h2>
+          <div id="collapseMariaDB" class="accordion-collapse collapse" data-bs-parent="#dbDocs">
+            <div class="accordion-body">
+              <p>String de conexão:</p>
+              <pre><code>jdbc:mariadb://mariadb.mrqz.me:3316/jotapedb;</code></pre>
+              <p>Credenciais:</p>
+              <pre><code>
+sqlserver:
+  usuario: root
+  senha: jquest
+              </code></pre>
+              <a href="mariadb.md" class="btn btn-outline-primary" download>📄 Baixar MariaDB.md</a>
             </div>
           </div>
         </div>
