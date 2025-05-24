@@ -124,8 +124,7 @@ services:
     container_name: apcupsd
     hostname: apcupsd
     restart: unless-stopped
-    networks:
-      - proxy-network
+    network_mode: "host"
 
   noip-duc:
     image: ghcr.io/noipcom/noip-duc:latest
@@ -136,6 +135,22 @@ services:
       - noip/noip-duc.env
     networks:
       - proxy-network
+
+  dcgm-exporter:
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:4.2.3-4.1.1-ubuntu22.04
+    container_name: dcgm-exporter
+    hostname: dcgm-exporter
+    restart: unless-stopped
+    runtime: nvidia
+    deploy:
+        resources:
+          reservations:
+            devices:
+              - capabilities: [gpu]
+    cap_add:
+      - SYS_ADMIN
+    network_mode: "host"
+    command: -r localhost:5555 -f /etc/dcgm-exporter/dcp-metrics-included.csv
 
 volumes:
   portainer-data:
