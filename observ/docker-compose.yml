@@ -21,9 +21,28 @@ services:
     restart: unless-stopped
     ports:
       - 3010:9000
+    environment:
+      ADMIN_PASSWORD: jquest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer-data:/data
+    networks:
+      - proxy-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    hostname: grafana
+    restart: unless-stopped
+    ports:
+      - "3020:3000"
+    environment:
+      - GF_PANELS_DISABLE_SANITIZE_HTML=true
+      - GF_SECURITY_ADMIN_USER=marquezjp
+      - GF_SECURITY_ADMIN_PASSWORD=jquest
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
     networks:
       - proxy-network
 
@@ -39,21 +58,35 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    resources:
-      limits:
-        memory: "512M"
-        cpus: "0.5"
-      reservations:
-        memory: "256M"
-        cpus: "0.25"
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--log.level=error'
       - '--storage.tsdb.path=/prometheus'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
     volumes:
       - ./prometheus:/etc/prometheus
       - prometheus-data:/prometheus
+    networks:
+      - proxy-network
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    hostname: cadvisor
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    # command:
+    #   - '--logtostderr -docker_only'
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
     networks:
       - proxy-network
 
@@ -65,9 +98,10 @@ services:
     ports:
       - "9100:9100"
     command:
-      - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
+      - '--path.procfs=/host/proc'
       - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+      - '--no-collector.ipvs'
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -101,24 +135,6 @@ services:
       - DCGM_EXPORTER_LISTEN=0.0.0.0:9400
       - DCGM_EXPORTER_KUBERNETES=false
 
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
-    container_name: cadvisor
-    hostname: cadvisor
-    restart: unless-stopped
-    ports:
-      - "8081:8081"
-    devices:
-      - /dev/kmsg
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
-    networks:
-      - proxy-network
-
   loki:
     image: grafana/loki:latest
     container_name: loki
@@ -142,37 +158,15 @@ services:
     networks:
       - proxy-network
 
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    hostname: grafana
-    restart: unless-stopped
-    ports:
-      - "3020:3000"
-    resources:
-      limits:
-        memory: "512M"
-        cpus: "0.5"
-      reservations:
-        memory: "256M"
-        cpus: "0.25"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=jquest  # Altere para uma senha segura
-      - GF_USERS_ALLOW_SIGN_UP=false
-    volumes:
-      - grafana-data:/var/lib/grafana
-    networks:
-      - proxy-network
-
-  noip-duc:
-    image: ghcr.io/noipcom/noip-duc:latest
-    container_name: noip-duc
-    hostname: noip-duc
-    restart: unless-stopped
-    env_file:
-      - noip/noip-duc.env
-    networks:
-      - proxy-network
+  # noip-duc:
+  #   image: ghcr.io/noipcom/noip-duc:latest
+  #   container_name: noip-duc
+  #   hostname: noip-duc
+  #   restart: unless-stopped
+  #   env_file:
+  #     - noip/noip-duc.env
+  #   networks:
+  #     - proxy-network
 
 volumes:
   portainer-data:
