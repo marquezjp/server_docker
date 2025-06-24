@@ -10,10 +10,10 @@ services:
     ports:
       - "1434:1433"
     volumes:
-      - /var/lib/docker/volumes/segad-data/SEGADDB/Dados:/var/opt/mssql/data
-      - /var/lib/docker/volumes/segad-data/SEGADDB/Log:/var/opt/mssql/log
-      - /var/lib/docker/volumes/segad-data/SEGADDB/Secrets:/var/opt/mssql/secrets
-      - /var/lib/docker/volumes/segad-data/SEGADDB/Dumps:/var/opt/mssql/dumps
+      - /var/lib/docker/DBSERVER/SEGADDB/Dados:/var/opt/mssql/data
+      - /var/lib/docker/DBSERVER/SEGADDB/Log:/var/opt/mssql/log
+      - /var/lib/docker/DBSERVER/SEGADDB/Secrets:/var/opt/mssql/secrets
+      - /var/lib/docker/DBSERVER/SEGADDB/Dumps:/var/opt/mssql/dumps
     networks:
       - proxy-network
 
