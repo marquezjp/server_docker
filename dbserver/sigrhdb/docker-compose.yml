@@ -5,16 +5,21 @@ services:
     hostname: sigrhdb
     restart: always
     ports:
-      - 1522:1521
-      - 3130:8080
-      - 5501:5500
+      - 1522:1521    # SQL*Net
+      - 3130:8080    # APEX/EM Express
+      - 5501:5500    # EM Express (HTTPS)
     environment:
       - ORACLE_PWD=jquest
       - ORACLE_SID=SIGRH
       - ORACLE_PDB=SIGRHDB1
     volumes:
-      - /var/lib/docker/volumes/sigrh-data/SIGRH-RR:/opt/oracle/oradata
-      - /var/lib/docker/volumes/sigrh-data/SIGRH-RR/DUMP:/opt/oracle/oradata/datapump
+      - /var/lib/docker/DBSERVER/SIGRH-RR:/opt/oracle/oradata
+      - /var/lib/docker/DBSERVER/SIGRH-RR/DUMP:/opt/oracle/oradata/datapump
+    shm_size: "4g"    # Aumenta memória compartilhada
+    mem_limit: "32g"  # Limita memória do contêiner
+    cpus: "6.0"       # Limita número de CPUs
+    sysctls:
+      kernel.sem: "250 32000 100 128"
     networks:
       - proxy-network
 
