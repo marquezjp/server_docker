@@ -1,6 +1,6 @@
 # Conexão com Banco SIGRHDB (Oracle)
 
-- **Porta**: 1521
+- **Porta**: 1522
 - **SID/Service Name**: SIGRH
 - **String JDBC**:
   ```
