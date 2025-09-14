@@ -14,12 +14,12 @@ services:
       - ORACLE_PDB=JOTAPEDB
     volumes:
       - oracle-data:/opt/oracle/oradata
-    networks:
-      - proxy-network
 
 volumes:
   oracle-data:
 
-networks:
- proxy-network:
-   external: true
+# Oracle Entreprise
+## Logar no Oracle Container Registry e Criar Token no container-registry.oracle.com
+# docker login container-registry.oracle.com -u joaopaulo.marquez@gmail.com
+## Baixar o Container Oracle Database Enterprise
+# docker pull container-registry.oracle.com/database/enterprise:latest
