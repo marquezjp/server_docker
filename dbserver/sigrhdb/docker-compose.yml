@@ -13,16 +13,10 @@ services:
       - ORACLE_SID=SIGRH
       - ORACLE_PDB=SIGRHDB1
     volumes:
-      - /var/lib/docker/DBSERVER/SIGRH-RR:/opt/oracle/oradata
-      - /var/lib/docker/DBSERVER/SIGRH-RR/DUMP:/opt/oracle/oradata/datapump
+      - /var/lib/dbserver/SIGRH-RR:/opt/oracle/oradata
+      - /var/lib/dbserver/SIGRH-RR/DUMP:/opt/oracle/oradata/datapump
     shm_size: "4g"    # Aumenta memória compartilhada
     mem_limit: "32g"  # Limita memória do contêiner
     cpus: "6.0"       # Limita número de CPUs
     sysctls:
       kernel.sem: "250 32000 100 128"
-    networks:
-      - proxy-network
-
-networks:
- proxy-network:
-   external: true
