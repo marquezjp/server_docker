@@ -1,0 +1,24 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    hostname: portainer
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+      - 9000:9000
+      - 9443:9443
+    environment:
+      ADMIN_PASSWORD: jquest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+#    networks:
+#      - proxy-network
+
+volumes:
+  portainer-data:
+
+#networks:
+#  proxy-network:
+#    external: true
