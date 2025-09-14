@@ -1,0 +1,29 @@
+services:
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx
+    hostname: nginx
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    environment:
+      DISABLE_IPV6: true
+    volumes:
+      - data:/data
+      - letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy-network
+
+volumes:
+  data:
+  letsencrypt:
+
+networks:
+  proxy-network:
+    external: true
+
+# Credenciais Padrão
+# Utilizador: admin@example.com
+# Password: changeme
