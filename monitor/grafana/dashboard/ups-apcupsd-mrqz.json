@@ -167,17 +167,18 @@
     },
 
     {
-      "title": "Transições de status (0/1)",
+      "title": "Transições de Status",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 24, "x": 0, "y": 14 },
       "datasource": "${DS_PROMETHEUS}",
       "targets": [
-        { "expr": "apcupsd_ups_status{status=\"ONLINE\"}",  "legendFormat": "ONLINE",  "refId": "A" },
-        { "expr": "apcupsd_ups_status{status=\"ONBATT\"}",  "legendFormat": "ONBATT",  "refId": "B" },
-        { "expr": "apcupsd_ups_status{status=\"LOWBATT\"}",  "legendFormat": "LOWBATT", "refId": "C" },
-        { "expr": "apcupsd_ups_status{status=\"OVERLOAD\"}", "legendFormat": "OVERLOAD", "refId": "D" }
+        { "expr": "apcupsd_ups_status{status=\"ONLINE\"}",      "legendFormat": "ONLINE",      "refId": "A" },
+        { "expr": "apcupsd_ups_status{status=\"ONBATT\"}",      "legendFormat": "ONBATT",      "refId": "B" },
+        { "expr": "apcupsd_ups_status{status=\"LOWBATT\"}",     "legendFormat": "LOWBATT",     "refId": "C" },
+        { "expr": "apcupsd_ups_status{status=\"OVERLOAD\"}",    "legendFormat": "OVERLOAD",    "refId": "D" },
+        { "expr": "apcupsd_ups_status{status=\"REPLACEBATT\"}", "legendFormat": "REPLACEBATT", "refId": "E" },
+        { "expr": "apcupsd_ups_status{status=\"NOBATT\"}",      "legendFormat": "NOBATT",      "refId": "F" }
       ],
-      "fieldConfig": { "defaults": { "unit": "short" } },
       "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } }
     },
 
