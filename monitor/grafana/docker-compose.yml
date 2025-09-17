@@ -7,12 +7,16 @@ services:
       - "3000:3000"
     environment:
       - GF_PANELS_DISABLE_SANITIZE_HTML=true
+      # Evite deixar desativada a sanitização de HTML a menos que precise MESMO
       - GF_SECURITY_ADMIN_USER=marquezjp
       - GF_SECURITY_ADMIN_PASSWORD=jquest
       - GF_USERS_ALLOW_SIGN_UP=false
-#      - GF_SERVER_ROOT_URL=https://grafana.mrqz.me
-#      - GF_SERVER_DOMAIN=grafana.mrqz.me
+      # Se for publicar atrás de proxy, descomente e ajuste:
+      # - GF_SERVER_ROOT_URL=https://grafana.mrqz.me
+      # - GF_SERVER_DOMAIN=grafana.mrqz.me
     volumes:
+      # Provisioning opcional (datasources/dashboards/alerts-as-code)
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana-data:/var/lib/grafana
     networks:
       - proxy-network
@@ -24,14 +28,16 @@ services:
     ports:
       - "9091:9090"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9090 || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:9090/-/ready || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--log.level=error'
+      - '--log.level=warn'
       - '--storage.tsdb.path=/prometheus'
+      # Retenção mais segura para não crescer infinito (ajuste conforme disco)
+      - '--storage.tsdb.retention.time=30d'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
     volumes:
@@ -44,8 +50,6 @@ services:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
     restart: unless-stopped
-    ports:
-      - "8081:8081"
     devices:
       - /dev/kmsg
     volumes:
@@ -61,8 +65,6 @@ services:
     image: prom/node-exporter:latest
     container_name: node-exporter
     restart: unless-stopped
-    ports:
-      - "9100:9100"
     command:
       - '--path.sysfs=/host/sys'
       - '--path.procfs=/host/proc'
@@ -75,15 +77,15 @@ services:
     networks:
       - proxy-network
 
+# Exporta /metrics do apcupsd (rodando no host)
   apcupsd:
     image: jangrewe/apcupsd-exporter:latest
     container_name: apcupsd
-    hostname: apcupsd
     restart: unless-stopped
     network_mode: "host"
 
   dcgm-exporter:
-    image: nvcr.io/nvidia/k8s/dcgm-exporter:4.2.3-4.1.1-ubuntu22.04
+    image: nvidia/dcgm-exporter:4.4.0-4.5.0-ubuntu22.04
     container_name: dcgm-exporter
     hostname: dcgm-exporter
     restart: unless-stopped
@@ -100,27 +102,6 @@ services:
     environment:
       - DCGM_EXPORTER_LISTEN=0.0.0.0:9400
       - DCGM_EXPORTER_KUBERNETES=false
-
-  loki:
-    image: grafana/loki:latest
-    container_name: loki
-    hostname: loki
-    restart: unless-stopped
-    ports:
-      - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      - proxy-network
-
-  promtail:
-    image: grafana/promtail:latest
-    container_name: promtail
-    hostname: promtail
-    restart: unless-stopped
-    command: -config.file=/etc/promtail/config.yml
-    volumes:
-      - /var/log:/var/log
-      - ./promtail:/etc/promtail
     networks:
       - proxy-network
 

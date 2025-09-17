@@ -5,7 +5,7 @@ global:
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['prometheus:9090']
 
   - job_name: 'cadvisor'
     static_configs:
@@ -15,16 +15,23 @@ scrape_configs:
     static_configs:
       - targets: ['node-exporter:9100']
 
+  # Docker Engine metrics (opcional, se habilitar no daemon.json)
   - job_name: 'docker'
     static_configs:
       - targets: ['172.17.0.1:9323']
-
-  - job_name: 'dcgm-exporter'
-    static_configs:
-      - targets: ['192.168.0.10:9400']
-    metrics_path: /metrics
-    scrape_timeout: 10s
+    # /etc/docker/daemon.json
+    # {
+    #   "metrics-addr": "0.0.0.0:9323"
+    # }
+    # Dica: por segurança prefira "127.0.0.1:9323" e colete via host-gateway,
+    # adicionando um endpoint do node-exporter textfile ou um socat local.
 
   - job_name: 'apcupsd'
     static_configs:
-      - targets: ['192.168.0.10:9162']
+      - targets: ['172.17.0.1:9162']
+
+  - job_name: 'dcgm-exporter'
+    static_configs:
+      - targets: ['dcgm-exporter:9400']
+    metrics_path: /metrics
+    scrape_timeout: 10s
