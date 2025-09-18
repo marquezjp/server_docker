@@ -69,6 +69,7 @@ services:
       - '--path.rootfs=/rootfs'
       - '--path.sysfs=/host/sys'
       - '--path.procfs=/host/proc'
+      - '--collector.processes'
       - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
       - '--collector.filesystem.ignored-fs-types=^(autofs|proc|sysfs|cgroup.*|overlay|squashfs|tmpfs|devtmpfs|nsfs|tracefs)$$'
       - '--no-collector.ipvs'

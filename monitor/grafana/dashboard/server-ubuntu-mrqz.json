@@ -8,7 +8,7 @@
   "style": "dark",
   "refresh": "15s",
   "editable": true,
-  "description": "Monitoramento do servidor Ubuntu (host Docker/IA) com verificação de tunables de kernel",
+  "description": "Monitoramento do Servidor Ubuntu",
 
   "__inputs": [
     { "name": "DS_PROMETHEUS", "label": "Prometheus", "type": "datasource", "pluginId": "prometheus", "pluginName": "Prometheus" }
@@ -25,920 +25,240 @@
 
   "panels": [
 
-    {
-      "title": "Resumo",
-      "type": "row",
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "collapsed": false,
-      "panels": []
-    },
+    { "title": "Resumo", "type": "row", "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 } },
+
     {
       "title": "Geral",
       "type": "bargauge",
       "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
       "datasource": "${DS_PROMETHEUS}",
-      "description": "Resource pressure via PSI",
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "unit": "percentunit",
           "decimals": 1,
-          "links": [],
-          "mappings": [],
-          "max": 1,
-          "min": 0,
+          "min": 0, "max": 1,
           "thresholds": {
             "mode": "percentage",
             "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "dark-yellow",
-                "value": 70
-              },
-              {
-                "color": "dark-red",
-                "value": 90
-              }
+              { "color": "#2E7D32" },
+              { "color": "#EF6C00", "value": 70 },
+              { "color": "#D32F2F", "value": 90 }
             ]
-          },
-          "unit": "percentunit"
-        },
-        "overrides": []
+          }
+        }
       },
       "options": {
         "displayMode": "basic",
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "maxVizHeight": 300,
-        "minVizHeight": 10,
-        "minVizWidth": 0,
-        "namePlacement": "auto",
         "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "sizing": "auto",
-        "text": {},
-        "valueMode": "color"
+        "reduceOptions": { "calcs": ["lastNotNull"] }
       },
       "targets": [
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "irate(node_pressure_cpu_waiting_seconds_total[$__rate_interval])",
-          "format": "time_series",
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "CPU",
-          "range": false,
-          "refId": "A",
-          "step": 240
-        },
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "irate(node_pressure_memory_waiting_seconds_total[$__rate_interval])",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "Mem",
-          "range": false,
-          "refId": "B",
-          "step": 240
-        },
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "irate(node_pressure_io_waiting_seconds_total[$__rate_interval])",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "I/O",
-          "range": false,
-          "refId": "C",
-          "step": 240
-        },
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "irate(node_pressure_irq_stalled_seconds_total[$__rate_interval])",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "Irq",
-          "range": false,
-          "refId": "D",
-          "step": 240
-        }
+        { "expr": "irate(node_pressure_cpu_waiting_seconds_total[$__rate_interval]) * 100", "refId": "A", "legendFormat": "CPU" },
+        { "expr": "irate(node_pressure_memory_waiting_seconds_total[$__rate_interval]) * 100", "refId": "B", "legendFormat": "Mem" },
+        { "expr": "irate(node_pressure_io_waiting_seconds_total[$__rate_interval]) * 100", "refId": "C", "legendFormat": "I/O" }
       ]
     },
+
     {
       "title": "CPU",
       "type": "gauge",
       "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
       "datasource": "${DS_PROMETHEUS}",
-      "description": "Overall CPU busy percentage (averaged across all cores)",
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "unit": "percent",
           "decimals": 1,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "max": 100,
-          "min": 0,
+          "min": 0, "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "rgba(50, 172, 45, 0.97)",
-                "value": 0
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 85
-              },
-              {
-                "color": "rgba(245, 54, 54, 0.9)",
-                "value": 95
-              }
+              { "color": "#2E7D32" },
+              { "color": "#EF6C00", "value": 85 },
+              { "color": "#D32F2F", "value": 95 }
             ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "targets": [
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[$__rate_interval])))",
-          "hide": false,
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "range": false,
-          "refId": "A",
-          "step": 240
+          }
         }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[$__rate_interval])))", "refId": "A" }
       ]
     },
+
     {
       "title": "Carga",
       "type": "gauge",
       "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
       "datasource": "${DS_PROMETHEUS}",
-      "description": "System load  over all CPU cores together",
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "unit": "percent",
           "decimals": 1,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "max": 100,
-          "min": 0,
+          "min": 0, "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "rgba(50, 172, 45, 0.97)",
-                "value": 0
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 85
-              },
-              {
-                "color": "rgba(245, 54, 54, 0.9)",
-                "value": 95
-              }
+              { "color": "#2E7D32" },
+              { "color": "#EF6C00", "value": 85 },
+              { "color": "#D32F2F", "value": 95 }
             ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "targets": [
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "scalar(node_load1) * 100 / count(count(node_cpu_seconds_total) by (cpu))",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "intervalFactor": 1,
-          "range": false,
-          "refId": "A",
-          "step": 240
+          }
         }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "expr": "scalar(node_load1) * 100 / count(count(node_cpu_seconds_total) by (cpu))", "refId": "A" }
       ]
     },
+
     {
       "title": "Memória",
       "type": "gauge",
       "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
       "datasource": "${DS_PROMETHEUS}",
-      "description": "Real RAM usage excluding cache and reclaimable memory",
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "unit": "percent",
           "decimals": 1,
-          "mappings": [],
-          "max": 100,
-          "min": 0,
+          "min": 0, "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "rgba(50, 172, 45, 0.97)",
-                "value": 0
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 80
-              },
-              {
-                "color": "rgba(245, 54, 54, 0.9)",
-                "value": 90
-              }
+              { "color": "#2E7D32" },
+              { "color": "#EF6C00", "value": 80 },
+              { "color": "#D32F2F", "value": 90 }
             ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "targets": [
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "intervalFactor": 1,
-          "range": false,
-          "refId": "B",
-          "step": 240
+          }
         }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100", "refId": "B" }
       ]
     },
+
     {
       "title": "SWAP",
       "type": "gauge",
       "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
       "datasource": "${DS_PROMETHEUS}",
-      "description": "Percentage of swap space currently used by the system",
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "unit": "percent",
           "decimals": 1,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "max": 100,
-          "min": 0,
+          "min": 0, "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "rgba(50, 172, 45, 0.97)",
-                "value": 0
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 10
-              },
-              {
-                "color": "rgba(245, 54, 54, 0.9)",
-                "value": 25
-              }
+              { "color": "#2E7D32" },
+              { "color": "#EF6C00", "value": 10 },
+              { "color": "#D32F2F", "value": 25 }
             ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "targets": [
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "((node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) / (node_memory_SwapTotal_bytes)) * 100",
-          "instant": true,
-          "intervalFactor": 1,
-          "range": false,
-          "refId": "A",
-          "step": 240
+          }
         }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "expr": "((node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) / node_memory_SwapTotal_bytes) * 100", "refId": "A" }
       ]
     },
+
     {
       "title": "CPU IOWait (5m)",
       "type": "gauge",
       "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
       "datasource": "${DS_PROMETHEUS}",
-      "description": "Used Root FS",
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "unit": "percent",
           "decimals": 1,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "min": 0,
-          "max": 100,
+          "min": 0, "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "rgba(50, 172, 45, 0.97)",
-                "value": 0
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 20
-              },
-              {
-                "color": "rgba(245, 54, 54, 0.9)",
-                "value": 50
-              }
+              { "color": "#2E7D32" },
+              { "color": "#EF6C00", "value": 20 },
+              { "color": "#D32F2F", "value": 50 }
             ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "targets": [
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "avg(irate(node_cpu_seconds_total{mode=\"iowait\"}[5m])) * 100",
-          "format": "time_series",
-          "instant": true,
-          "intervalFactor": 1,
-          "range": false,
-          "refId": "A",
-          "step": 240
+          }
         }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "expr": "avg(irate(node_cpu_seconds_total{mode=\"iowait\"}[5m])) * 100", "refId": "A" }
       ]
     },
+
     {
       "title": "Uptime",
       "type": "stat",
       "gridPos": { "h": 2, "w": 4, "x": 0, "y": 5 },
       "datasource": "${DS_PROMETHEUS}",
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 1,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
+      "fieldConfig": { "defaults": { "unit": "s" } },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "graphMode": "none", "colorMode": "none" },
       "targets": [
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "node_time_seconds - node_boot_time_seconds",
-          "instant": true,
-          "intervalFactor": 1,
-          "range": false,
-          "refId": "A",
-          "step": 240
-        }
+        { "expr": "node_time_seconds - node_boot_time_seconds", "refId": "A" }
       ]
     },
+
     {
       "title": "Núcleos",
       "type": "stat",
       "gridPos": { "h": 2, "w": 4, "x": 4, "y": 5 },
       "datasource": "${DS_PROMETHEUS}",
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "graphMode": "none", "colorMode": "none" },
       "targets": [
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "count(count(node_cpu_seconds_total) by (cpu))",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
+        { "expr": "count(count(node_cpu_seconds_total) by (cpu))", "refId": "A" }
       ]
     },
+
     {
       "title": "Reinicialização",
       "type": "stat",
       "gridPos": { "h": 2, "w": 4, "x": 8, "y": 5 },
       "datasource": "${DS_PROMETHEUS}",
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 1,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "bool_yes_no"
-        },
-        "overrides": []
-      },
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
+      "fieldConfig": { "defaults": { "unit": "bool_yes_no" } },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "graphMode": "none", "colorMode": "none" },
       "targets": [
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "node_reboot_required",
-          "instant": true,
-          "intervalFactor": 1,
-          "range": false,
-          "refId": "A",
-          "step": 240
-        }
+        { "expr": "node_reboot_required", "refId": "A" }
       ]
     },
+
     {
       "title": "Memória Total",
       "type": "stat",
       "gridPos": { "h": 2, "w": 4, "x": 12, "y": 5 },
       "datasource": "${DS_PROMETHEUS}",
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 0,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
+      "fieldConfig": { "defaults": { "unit": "bytes", "decimals": 0 } },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "graphMode": "none", "colorMode": "none" },
       "targets": [
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "node_memory_MemTotal_bytes",
-          "instant": true,
-          "intervalFactor": 1,
-          "range": false,
-          "refId": "A",
-          "step": 240
-        }
+        { "expr": "node_memory_MemTotal_bytes", "refId": "A" }
       ]
     },
+
     {
       "title": "SWAP Total",
       "type": "stat",
       "gridPos": { "h": 2, "w": 4, "x": 16, "y": 5 },
       "datasource": "${DS_PROMETHEUS}",
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 0,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
+      "fieldConfig": { "defaults": { "unit": "bytes", "decimals": 0 } },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "graphMode": "none", "colorMode": "none" },
       "targets": [
-        {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "node_memory_SwapTotal_bytes",
-          "instant": true,
-          "intervalFactor": 1,
-          "range": false,
-          "refId": "A",
-          "step": 240
-        }
+        { "expr": "node_memory_SwapTotal_bytes", "refId": "A" }
       ]
     },
+
     {
       "title": "Taxa de Transferência",
       "type": "stat",
       "gridPos": { "h": 2, "w": 4, "x": 20, "y": 5 },
       "datasource": "${DS_PROMETHEUS}",
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 0,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "rgba(50, 172, 45, 0.97)",
-                "value": 0
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 70
-              },
-              {
-                "color": "rgba(245, 54, 54, 0.9)",
-                "value": 90
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
+      "fieldConfig": { "defaults": { "unit": "Bps" } },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "graphMode": "none", "colorMode": "none" },
       "targets": [
         {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "avg_over_time((rate(node_disk_read_bytes_total{device=\"nvme0n1\"}[5m]) + rate(node_disk_written_bytes_total{device=\"nvme0n1\"}[5m]))[5m:])",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "intervalFactor": 1,
-          "range": false,
-          "refId": "A",
-          "step": 240
+          "expr": "rate(node_disk_read_bytes_total{device=\"nvme0n1\"}[5m]) + rate(node_disk_written_bytes_total{device=\"nvme0n1\"}[5m])",
+          "refId": "A"
         }
       ]
     },
@@ -1003,119 +323,24 @@
       "gridPos": { "h": 6, "w": 8, "x": 0, "y": 18 },
       "datasource": "${DS_PROMETHEUS}",
       "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "hideFrom": {
-              "tooltip": false,
-              "viz": false,
-              "legend": false
-            }
-          },
-          "color": { "mode": "palette-classic" },
-          "mappings": [],
-          "unit": "bytes",
-          "decimals": 1
-        },
+        "defaults": { "unit": "bytes", "decimals": 1 },
         "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "red"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "/home"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "green"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "/var/lib/docker"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "orange"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "/var/lib/dbserver"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "blue"
-                }
-              }
-            ]
-          }
+          { "matcher": { "id": "byName", "options": "/" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "#1E88E5" } } ] },
+          { "matcher": { "id": "byName", "options": "/home" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "#43A047" } } ] },
+          { "matcher": { "id": "byName", "options": "/var/lib/docker" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "#FB8C00" } } ] },
+          { "matcher": { "id": "byName", "options": "/var/lib/dbserver" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "#8E24AA" } } ] }
         ]
       },
       "targets": [
-        {
-          "expr": "node_filesystem_size_bytes {fstype=~\"ext4|xfs\"}",
-          "format": "time_series",
-          "instant": true,
-          "interval": "10s",
-          "intervalFactor": 1,
-          "legendFormat": "{{mountpoint}}",
-          "refId": "A"
-        }
+        { "expr": "node_filesystem_size_bytes{fstype=~\"ext4|xfs\"}", "refId": "A", "legendFormat": "{{mountpoint}}", "instant": true }
       ],
-      "maxDataPoints": 3,
       "options": {
-        "reduceOptions": {
-          "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": ""
-        },
         "pieType": "pie",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none",
-          "hideZeros": false
-        },
-        "legend": {
-          "showLegend": true,
-          "displayMode": "table",
-          "placement": "right",
-          "values": [
-            "value"
-          ],
-          "calcs": []
-        }
+        "legend": { "showLegend": true, "displayMode": "table", "placement": "right", "values": ["value"] },
+        "reduceOptions": { "calcs": ["lastNotNull"] }
       }
     },
+
     {
       "title": "Uso do FS Root",
       "type": "gauge",
@@ -1124,7 +349,7 @@
       "targets": [
         { "expr": "100 - (node_filesystem_avail_bytes{mountpoint=\"/\",fstype!~\"tmpfs|overlay|squashfs\"} * 100 / node_filesystem_size_bytes{mountpoint=\"/\",fstype!~\"tmpfs|overlay|squashfs\"})", "refId": "A" }
       ],
-      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [ { "color": "green" }, { "color": "orange", "value": 75 }, { "color": "red", "value": 90 } ] } } },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [ { "color": "#2E7D32" }, { "color": "#EF6C00", "value": 75 }, { "color": "#D32F2F", "value": 90 } ] } } },
       "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
     {
@@ -1135,7 +360,7 @@
       "targets": [
         { "expr": "100 - (node_filesystem_avail_bytes{mountpoint=\"/home\",fstype!~\"tmpfs|overlay|squashfs\"} * 100 / node_filesystem_size_bytes{mountpoint=\"/home\",fstype!~\"tmpfs|overlay|squashfs\"})", "refId": "A" }
       ],
-      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [ { "color": "green" }, { "color": "orange", "value": 75 }, { "color": "red", "value": 90 } ] } } },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [ { "color": "#2E7D32" }, { "color": "#EF6C00", "value": 75 }, { "color": "#D32F2F", "value": 90 } ] } } },
       "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
     {
@@ -1146,7 +371,7 @@
       "targets": [
         { "expr": "100 - (node_filesystem_avail_bytes{mountpoint=\"/var/lib/docker\",fstype!~\"tmpfs|overlay|squashfs\"} * 100 / node_filesystem_size_bytes{mountpoint=\"/var/lib/docker\",fstype!~\"tmpfs|overlay|squashfs\"})", "refId": "A" }
       ],
-      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [ { "color": "green" }, { "color": "orange", "value": 75 }, { "color": "red", "value": 90 } ] } } },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [ { "color": "#2E7D32" }, { "color": "#EF6C00", "value": 75 }, { "color": "#D32F2F", "value": 90 } ] } } },
       "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
     {
@@ -1157,9 +382,10 @@
       "targets": [
         { "expr": "100 - (node_filesystem_avail_bytes{mountpoint=\"/var/lib/dbserver\",fstype!~\"tmpfs|overlay|squashfs\"} * 100 / node_filesystem_size_bytes{mountpoint=\"/var/lib/dbserver\",fstype!~\"tmpfs|overlay|squashfs\"})", "refId": "A" }
       ],
-      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [ { "color": "green" }, { "color": "orange", "value": 75 }, { "color": "red", "value": 90 } ] } } },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [ { "color": "#2E7D32" }, { "color": "#EF6C00", "value": 75 }, { "color": "#D32F2F", "value": 90 } ] } } },
       "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
+
     {
       "title": "I/O (leituras/escritas por segundo)",
       "type": "timeseries",
@@ -1206,10 +432,16 @@
       "gridPos": { "h": 6, "w": 12, "x": 12, "y": 32 },
       "datasource": "${DS_PROMETHEUS}",
       "targets": [
-        { "expr": "node_procs_running", "refId": "A" },
-        { "expr": "node_processes", "refId": "B" }
+        { "expr": "node_procs_running", "refId": "A", "instant": true, "legendFormat": "Executando" },
+        { "expr": "node_processes_pids", "refId": "B", "instant": true, "legendFormat": "Total" }
       ],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "options": {
+        "graphMode": "none",
+        "orientation": "horizontal",
+        "textMode": "value_and_name",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      }
     }
   ]
 }
