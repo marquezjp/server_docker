@@ -8,6 +8,7 @@
   "style": "dark",
   "refresh": "10s",
   "editable": true,
+  "description": "Painel de Métricas da GPU NVIDIA RTX 4070",
 
   "__inputs": [
     {
@@ -19,14 +20,19 @@
     }
   ],
 
-  "annotations": { "list": [
-    {
-      "builtIn": 1, "datasource": "-- Grafana --",
-      "enable": true, "hide": true,
-      "iconColor": "rgba(0, 211, 255, 1)",
-      "name": "Annotations & Alerts", "type": "dashboard"
-    }
-  ]},
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
 
   "templating": {
     "list": [
@@ -36,7 +42,6 @@
         "label": "GPU",
         "datasource": "${DS_PROMETHEUS}",
         "includeAll": true,
-        "multi": false,
         "query": "label_values(DCGM_FI_DEV_GPU_UTIL, gpu)",
         "refresh": 1,
         "sort": 1,
@@ -52,262 +57,176 @@
     {
       "title": "GPU Util [%]",
       "type": "gauge",
-      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 0},
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
       "datasource": "${DS_PROMETHEUS}",
       "targets": [
         { "expr": "DCGM_FI_DEV_GPU_UTIL{gpu=~\"$gpu\"}", "refId": "A" }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
+          "unit": "percent", "min": 0, "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green"},
-              {"color": "orange", "value": 70},
-              {"color": "red", "value": 90}
+              { "color": "green" },
+              { "color": "orange", "value": 70 },
+              { "color": "red", "value": 90 }
             ]
           }
         }
       },
-      "options": {"reduceOptions": {"calcs":["lastNotNull"], "values": false}}
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
+
     {
       "title": "De/Para VRAM Util [%]",
       "type": "gauge",
-      "gridPos": {"h": 6, "w": 6, "x": 6, "y": 0},
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
       "datasource": "${DS_PROMETHEUS}",
       "targets": [
-        {"expr": "DCGM_FI_DEV_MEM_COPY_UTIL{gpu=~\"$gpu\"}", "refId": "A"}
+        { "expr": "DCGM_FI_DEV_MEM_COPY_UTIL{gpu=~\"$gpu\"}", "refId": "A" }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
+          "unit": "percent", "min": 0, "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green"},
-              {"color": "orange", "value": 50},
-              {"color": "red", "value": 80}
+              { "color": "green" },
+              { "color": "orange", "value": 50 },
+              { "color": "red", "value": 80 }
             ]
           }
         }
       },
-      "options": {"reduceOptions": {"calcs":["lastNotNull"], "values": false}}
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
+
     {
       "title": "VRAM [%]",
       "type": "gauge",
       "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
       "datasource": "${DS_PROMETHEUS}",
       "targets": [
-        {"expr": "100 * DCGM_FI_DEV_FB_USED{gpu=~\"$gpu\"} / (DCGM_FI_DEV_FB_USED{gpu=~\"$gpu\"} + DCGM_FI_DEV_FB_FREE{gpu=~\"$gpu\"})", "refId": "A", "instant": true}
+        {
+          "expr": "100 * DCGM_FI_DEV_FB_USED{gpu=~\"$gpu\"} / (DCGM_FI_DEV_FB_USED{gpu=~\"$gpu\"} + DCGM_FI_DEV_FB_FREE{gpu=~\"$gpu\"})",
+          "refId": "A"
+        }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
+          "unit": "percent", "min": 0, "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green" },
-              {"color": "orange", "value": 80},
-              {"color": "red", "value": 95}
+              { "color": "green" },
+              { "color": "orange", "value": 80 },
+              { "color": "red", "value": 95 }
             ]
           }
-        },
-        "overrides": []
+        }
       },
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false } }
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
+
     {
       "title": "Temperatura [°C]",
       "type": "gauge",
-      "gridPos": {"h": 6, "w": 6, "x": 18, "y": 0},
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
       "datasource": "${DS_PROMETHEUS}",
       "targets": [
-        {"expr": "DCGM_FI_DEV_GPU_TEMP{gpu=~\"${gpu}\"}", "legendFormat": "", "refId": "A"}
+        { "expr": "DCGM_FI_DEV_GPU_TEMP{gpu=~\"$gpu\"}", "refId": "A" }
       ],
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "thresholds"},
-          "mappings": [],
-          "unit": "celsius",
-          "min": 0,
-          "max": 100,
+          "unit": "celsius", "min": 0, "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green", "value": null},
-              {"color": "orange", "value": 65},
-              {"color": "red", "value": 80}
+              { "color": "green" },
+              { "color": "orange", "value": 65 },
+              { "color": "red", "value": 80 }
             ]
           }
-        },
-        "overrides": []
+        }
       },
-      "options": {
-        "reduceOptions": {"values": false, "calcs": ["mean"], "fields": ""},
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto",
-        "minVizWidth": 75,
-        "minVizHeight": 75
-      }
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
 
     {
       "title": "Utilização (GPU e De/Para VRAM)",
       "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
       "datasource": "${DS_PROMETHEUS}",
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6},
       "targets": [
-        {"expr": "DCGM_FI_DEV_GPU_UTIL{gpu=~\"$gpu\"}", "legendFormat": "GPU {{gpu}}", "refId": "A"},
-        {"expr": "DCGM_FI_DEV_MEM_COPY_UTIL{gpu=~\"$gpu\"}", "legendFormat": "De/Para VRAM {{gpu}}", "refId": "B"}
+        { "expr": "DCGM_FI_DEV_GPU_UTIL{gpu=~\"$gpu\"}", "legendFormat": "GPU {{gpu}}", "refId": "A" },
+        { "expr": "DCGM_FI_DEV_MEM_COPY_UTIL{gpu=~\"$gpu\"}", "legendFormat": "De/Para VRAM {{gpu}}", "refId": "B" }
       ],
-      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 } },
-      "options": { "legend": {"displayMode":"list","placement":"bottom"}, "tooltip": {"mode":"multi"} }
+      "fieldConfig": { "defaults": { "unit": "percent" } },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } }
     },
 
     {
       "title": "VRAM Usada vs Total",
       "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
       "datasource": "${DS_PROMETHEUS}",
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6},
       "targets": [
-        {"expr": "DCGM_FI_DEV_FB_USED{gpu=~\"$gpu\"}", "legendFormat": "Usada {{gpu}}", "refId": "A"},
-        {"expr": "DCGM_FI_DEV_FB_USED{gpu=~\"$gpu\"} + DCGM_FI_DEV_FB_FREE{gpu=~\"$gpu\"}", "legendFormat": "Total {{gpu}}", "refId": "B"}
+        { "expr": "DCGM_FI_DEV_FB_USED{gpu=~\"$gpu\"}", "legendFormat": "Usada {{gpu}}", "refId": "A" },
+        { "expr": "DCGM_FI_DEV_FB_USED{gpu=~\"$gpu\"} + DCGM_FI_DEV_FB_FREE{gpu=~\"$gpu\"}", "legendFormat": "Total {{gpu}}", "refId": "B" }
       ],
-      "fieldConfig": { "defaults": { "unit": "Kbytes" } },
-      "options": { "legend": {"displayMode":"list","placement":"bottom"} }
+      "fieldConfig": { "defaults": { "unit": "bytes" } },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } }
     },
 
     {
-      "title": "GPU Consumo [Watts]",
+      "title": "GPU Consumo [W]",
       "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
       "datasource": "${DS_PROMETHEUS}",
-      "gridPos": {"h": 12, "w": 12, "x": 0, "y": 22},
       "targets": [
-        {"expr": "DCGM_FI_DEV_POWER_USAGE{gpu=~\"${gpu}\"}", "legendFormat": "GPU {{gpu}}", "refId": "A"}
+        { "expr": "DCGM_FI_DEV_POWER_USAGE{gpu=~\"$gpu\"}", "legendFormat": "GPU {{gpu}}", "refId": "A" }
       ],
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "linear",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "spanNulls": false,
-            "insertNulls": false,
-            "showPoints": "never",
-            "pointSize": 5,
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            },
-            "axisPlacement": "auto",
-            "axisLabel": "",
-            "axisColorMode": "text",
-            "axisBorderShow": false,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "axisCenteredZero": false,
-            "hideFrom": {
-              "tooltip": false,
-              "viz": false,
-              "legend": false
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "color": {
-            "mode": "palette-classic"
-          },
-          "mappings": [],
           "unit": "watt",
-          "min": 0,
-          "max": 250,
+          "min": 0, "max": 250,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green"},
-              {"color": "orange", "value": 150},
-              {"color": "red", "value": 200}
+              { "color": "green" },
+              { "color": "orange", "value": 150 },
+              { "color": "red", "value": 200 }
             ]
           }
-        },
-        "overrides": []
+        }
       },
-      "options": {
-        "tooltip": {"mode": "multi", "sort": "none", "hideZeros": false},
-        "legend": {"showLegend": true, "displayMode": "table", "placement": "bottom", "calcs": ["mean", "lastNotNull", "max"]},
-        "dataLinks": []
-      }
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean","lastNotNull","max"] }, "tooltip": { "mode": "multi" } }
     },
+
     {
       "title": "GPU Temperatura [°C]",
       "type": "timeseries",
       "datasource": "${DS_PROMETHEUS}",
-      "gridPos": {"h": 12, "w": 12, "x": 12, "y": 22},
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 },
       "targets": [
-        {"expr": "DCGM_FI_DEV_GPU_TEMP{gpu=~\"${gpu}\"}", "instant": false, "legendFormat": "GPU {{gpu}}", "refId": "A"}
+        { "expr": "DCGM_FI_DEV_GPU_TEMP{gpu=~\"$gpu\"}", "legendFormat": "GPU {{gpu}}", "refId": "A" }
       ],
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "linear",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "spanNulls": false,
-            "insertNulls": false,
-            "showPoints": "never",
-            "pointSize": 5,
-            "stacking": {"mode": "none", "group": "A"},
-            "axisPlacement": "auto",
-            "axisLabel": "",
-            "axisColorMode": "text",
-            "axisBorderShow": false,
-            "scaleDistribution": {"type": "linear"},
-            "axisCenteredZero": false,
-            "hideFrom": {"tooltip": false, "viz": false, "legend": false},
-            "thresholdsStyle": {"mode": "off"}
-          },
-          "color": {"mode": "palette-classic"},
-          "mappings": [],
           "unit": "celsius",
-          "min": 30,
-          "max": 100,
+          "min": 30, "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green"},
-              {"color": "orange", "value": 65},
-              {"color": "red", "value": 80}
+              { "color": "green" },
+              { "color": "orange", "value": 65 },
+              { "color": "red", "value": 80 }
             ]
           }
-        },
-        "overrides": []
+        }
       },
-      "options": {
-        "tooltip": {"mode": "multi", "sort": "none", "hideZeros": false},
-        "legend": {"showLegend": true, "displayMode": "table", "placement": "bottom", "calcs": ["mean", "lastNotNull", "max"]},
-        "dataLinks": []
-      }
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean","lastNotNull","max"] }, "tooltip": { "mode": "multi" } }
     }
   ]
 }
