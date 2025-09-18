@@ -170,3 +170,7 @@ networks:
 
 # docker compose up -d
 # docker compose logs -f nginx
+
+# Validar & Recarregar NGINX
+# docker exec -it nginx nginx -t
+# docker exec -it nginx nginx -s reload
