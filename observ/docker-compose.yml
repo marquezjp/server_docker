@@ -1,0 +1,172 @@
+services:
+  # Reverse proxy NGINX
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/site:/var/www/mrqz.me:ro
+    networks:
+      - proxy-network
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    hostname: portainer
+    restart: unless-stopped
+#    ports:
+#      - 8000:8000
+#      - 9000:9000
+#      - 9443:9443
+    environment:
+      ADMIN_PASSWORD: jquest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    networks:
+      - proxy-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+#    ports:
+#      - "3000:3000"
+    environment:
+      - GF_PANELS_DISABLE_SANITIZE_HTML=true
+      # Evite deixar desativada a sanitização de HTML a menos que precise MESMO
+      - GF_SECURITY_ADMIN_USER=marquezjp
+      - GF_SECURITY_ADMIN_PASSWORD=jquest
+      - GF_USERS_ALLOW_SIGN_UP=false
+      # Se for publicar atrás de proxy, descomente e ajuste:
+      - GF_SERVER_ROOT_URL=https://grafana.mrqz.me
+      - GF_SERVER_DOMAIN=grafana.mrqz.me
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - proxy-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9091:9090"
+    healthcheck:
+#      test: ["CMD-SHELL", "curl -f http://localhost:9090/-/ready || exit 1"]
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--log.level=warn'
+      - '--storage.tsdb.path=/prometheus'
+      # Retenção mais segura para não crescer infinito (ajuste conforme disco)
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    networks:
+      - proxy-network
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - proxy-network
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--path.procfs=/host/proc'
+      - '--collector.processes'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+      - '--collector.filesystem.ignored-fs-types=^(autofs|proc|sysfs|cgroup.*|overlay|squashfs|tmpfs|devtmpfs|nsfs|tracefs)$$'
+      - '--no-collector.ipvs'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - proxy-network
+
+# Exporta /metrics do apcupsd (rodando no host)
+  apcupsd:
+    image: jangrewe/apcupsd-exporter:latest
+    container_name: apcupsd
+    restart: unless-stopped
+    network_mode: "host"
+
+  dcgm-exporter:
+    image: nvidia/dcgm-exporter:4.4.0-4.5.0-ubuntu22.04
+    container_name: dcgm-exporter
+    hostname: dcgm-exporter
+    restart: unless-stopped
+    runtime: nvidia
+    deploy:
+        resources:
+          reservations:
+            devices:
+              - capabilities: [gpu]
+    cap_add:
+      - SYS_ADMIN
+#    ports:
+#      - "9400:9400"
+    environment:
+      - DCGM_EXPORTER_LISTEN=0.0.0.0:9400
+      - DCGM_EXPORTER_KUBERNETES=false
+    networks:
+      - proxy-network
+
+volumes:
+  portainer-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  proxy-network:
+    external: true
+
+# Gerar Autoridade Certificadora (CA) e Certificado Digital do Domínio
+# chmod +x ~/docker/nginx/certs/gerar-ca-cert.sh
+# ~/docker/nginx/certs/gerar-ca-cert.sh -d portainer.mrqz.me
+# ~/docker/nginx/certs/gerar-ca-cert.sh -d mrqz.me --wildcard --san "DNS:mrqz.me"
+# openssl s_client -connect portainer.mrqz.me:443 -servername portainer.mrqz.me </dev/null 2>/dev/null | openssl x509 -noout -text | grep -E 'Subject:|Issuer:|DNS:'
+
+# Importar CA local no cliente Windows
+# Import-Certificate -FilePath "P:\Projetos\JotaPeServer\certs\ca.crt" -CertStoreLocation "Cert:\LocalMachine\Root"
+# Win+R => mmc
+# Importar CA local no cliente Ubuntu
+# sudo cp ca.crt /usr/local/share/ca-certificates/mrqz-ca.crt
+# sudo update-ca-certificates
+# Validar o certificado
+# curl -I https://portainer.mrqz.me
+# curl -I https://portainer.mrqz.me --ssl-no-revoke
+# curl -vk https://portainer.mrqz.me
+
+# docker compose up -d
+# docker compose logs -f nginx
