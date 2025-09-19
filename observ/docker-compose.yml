@@ -30,7 +30,7 @@ services:
       ADMIN_PASSWORD: jquest
     command:
       # Se for publicar atrás de proxy via subpath 
-      - '--base-url=/container'
+      - '--base-url=/infra'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer-data:/data
@@ -55,6 +55,9 @@ services:
       # Se for publicar atrás de proxy via subpath 
       - GF_SERVER_ROOT_URL=https://mrqz.me/painel/
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      # Habilita Usuário Anônimo
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
     volumes:
       - grafana-data:/var/lib/grafana
     networks:
@@ -64,8 +67,8 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     restart: unless-stopped
-    ports:
-      - "9091:9090"
+#    ports:
+#      - "9091:9090"
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:9090/-/ready || exit 1"]
 #      test: ["CMD-SHELL", "exit 0"]
@@ -81,8 +84,8 @@ services:
       # Retenção mais segura para não crescer infinito (ajuste conforme disco)
       - '--storage.tsdb.retention.time=30d'
       # Se for publicar atrás de proxy via subpath 
-      - '--web.external-url=https://mrqz.me/metricas'
-      - '--web.route-prefix=/metricas'
+      - '--web.external-url=https://mrqz.me/coletor'
+      - '--web.route-prefix=/coletor'
     volumes:
       - ./prometheus:/etc/prometheus
       - prometheus-data:/prometheus

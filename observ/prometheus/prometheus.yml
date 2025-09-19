@@ -5,7 +5,7 @@ global:
 scrape_configs:
   - job_name: 'prometheus'
     # Se for publicar atrás de proxy via subpath 
-    metrics_path: /metricas/metrics
+    metrics_path: /coletor/metrics
     static_configs:
       - targets: ['prometheus:9090']
 
