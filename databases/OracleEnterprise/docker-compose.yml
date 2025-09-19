@@ -5,9 +5,9 @@ services:
     hostname: oracle
     restart: always
     ports:
-      - 1521:1521
-      - 3110:8080
-      - 5500:5500
+      - 1521:1521    # SQL*Net
+      - 8080:8080    # APEX/EM Express
+      - 5500:5500    # EM Express (HTTPS)
     environment:
       - ORACLE_PWD=jquest
       - ORACLE_SID=JOTAPE
