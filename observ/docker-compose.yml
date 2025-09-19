@@ -44,8 +44,6 @@ services:
 #    ports:
 #      - "3000:3000"
     environment:
-      - GF_PANELS_DISABLE_SANITIZE_HTML=true
-      # Evite deixar desativada a sanitização de HTML a menos que precise MESMO
       - GF_SECURITY_ADMIN_USER=marquezjp
       - GF_SECURITY_ADMIN_PASSWORD=jquest
       - GF_USERS_ALLOW_SIGN_UP=false
@@ -59,6 +57,7 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
     volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana-data:/var/lib/grafana
     networks:
       - proxy-network
@@ -166,10 +165,42 @@ services:
     networks:
       - proxy-network
 
+  loki:
+    image: grafana/loki:2.9.8
+    container_name: loki
+    restart: unless-stopped
+    command: [ "-config.file=/etc/loki/config/config.yml" ]
+#    ports:
+#      - "3100:3100"
+    volumes:
+      - ./loki/config.yml:/etc/loki/config/config.yml:ro
+      - loki-data:/loki
+    networks:
+      - proxy-network
+
+  promtail:
+    image: grafana/promtail:2.9.8
+    container_name: promtail
+    restart: unless-stopped
+    command: [ "-config.file=/etc/promtail/config.yml" ]
+    volumes:
+      # logs do Linux
+      - /var/log:/host/var/log:ro
+      # Descoberta Docker + leitura dos logs JSON dos containers
+      # logs JSON dos containers Docker
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      # acesso ao Docker para service discovery
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # config do promtail
+      - ./promtail/config.yml:/etc/promtail/config.yml:ro
+    networks:
+      - proxy-network
+
 volumes:
   portainer-data:
   prometheus-data:
   grafana-data:
+  loki-data:
 
 networks:
   proxy-network:

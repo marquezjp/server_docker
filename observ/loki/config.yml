@@ -1,0 +1,42 @@
+server:
+  http_listen_port: 3100
+
+auth_enabled: false
+
+common:
+  instance_addr: 127.0.0.1
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+# Esquema recomendado (boltdb-shipper)
+schema_config:
+  configs:
+    - from: 2024-01-01
+      store: boltdb-shipper
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+# Compactador + retenção (global)
+compactor:
+  working_directory: /loki/compactor
+  compaction_interval: 10m
+
+limits_config:
+  retention_period: 168h   # 7 dias | ajuste conforme seu disco
+  # limite de labels/streams para evitar cardinalidade explosiva (opcional)
+  max_label_names_per_series: 30
+  max_global_streams_per_user: 50000
+
+table_manager:
+  retention_deletes_enabled: true
+  retention_period: 168h

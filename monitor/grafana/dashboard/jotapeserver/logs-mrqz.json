@@ -1,0 +1,160 @@
+{
+  "title": "Logs do Servidor - MRQZ",
+  "uid": "logs-mrqz",
+  "tags": ["logs", "loki", "docker"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "style": "dark",
+  "refresh": "30s",
+  "editable": true,
+  "description": "Painel dos Logs",
+
+  "weekStart": "",
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+
+  "templating": {
+    "list": [
+      {
+        "name": "ds_loki",
+        "type": "datasource",
+        "query": "loki",
+        "label": "Datasource",
+        "current": {},
+        "options": [],
+        "refresh": 1
+      },
+      {
+        "name": "container_name",
+        "type": "query",
+        "label": "Container",
+        "datasource": { "type": "loki", "uid": "$ds_loki" },
+        "query": "label_values({job=\"docker\"}, container_name)",
+        "includeAll": true,
+        "allValue": "",
+        "refresh": 2,
+        "sort": 1
+      },
+      {
+        "name": "compose_service",
+        "type": "query",
+        "label": "Compose service",
+        "datasource": { "type": "loki", "uid": "$ds_loki" },
+        "query": "label_values({job=\"docker\"}, compose_service)",
+        "includeAll": true,
+        "allValue": "",
+        "refresh": 2,
+        "sort": 1
+      }
+    ]
+  },
+
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+
+  "panels": [
+    {
+      "title": "Recentes (todos) — filtrável",
+      "type": "logs",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "$ds_loki" },
+          "expr": "{job=\"docker\" ${container_name:regex}, ${compose_service:regex}}", "refId": "A" }
+      ],
+      "options": {
+        "dedupStrategy": "none",
+        "labels": [],
+        "showCommonLabels": false,
+        "showLabels": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true,
+        "preferStreaming": true
+      },
+      "transformations": []
+    },
+    {
+      "title": "Errors (últimos 15m)",
+      "type": "logs",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 12 },
+      "timeFrom": "15m",
+      "options": {
+        "dedupStrategy": "signature",
+        "labels": [],
+        "showCommonLabels": false,
+        "showLabels": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true,
+        "preferStreaming": true
+      },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "$ds_loki" },
+          "expr": "{job=\"docker\"${container_name:regex},${compose_service:regex}} |= \"error\"", "refId": "A" }
+      ]
+    },
+    {
+      "title": "Erros por minuto (tendência)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "$ds_loki" },
+          "expr": "sum by (container_name) (count_over_time({job=\"docker\"${container_name:regex},${compose_service:regex}} |= \"error\" [$__interval]))", "refId": "A"}
+      ],
+      "options": {
+        "legend": { "displayMode": "list", "placement": "right" }
+      },
+      "fieldConfig": {
+        "defaults": { "unit": "ops" },
+        "overrides": []
+      }
+    },
+    {
+      "title": "Top containers por volume de logs (janela = $__interval)",
+      "type": "bargauge",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "$ds_loki" },
+          "expr": "topk(10, sum by (container_name) (count_over_time({job=\"docker\"${container_name:regex},${compose_service:regex}} [$__interval])) )", "refId": "A" }
+      ],
+      "options": {
+        "displayMode": "basic",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1000 },
+              { "color": "red", "value": 5000 }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    }
+  ]
+}
