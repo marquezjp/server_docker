@@ -1,6 +1,6 @@
 {
   "title": "Server Ubuntu - MRQZ",
-  "uid": "server-ubuntu-mrqz",
+  "uid": "jotapeserver-mrqz",
   "tags": ["Ubuntu","Node","Server","Prometheus"],
   "timezone": "browser",
   "schemaVersion": 38,

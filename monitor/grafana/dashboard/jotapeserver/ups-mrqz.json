@@ -1,6 +1,6 @@
 {
   "title": "UPS APC - MRQZ",
-  "uid": "ups-apcupsd-mrqz",
+  "uid": "ups-mrqz",
   "tags": ["UPS", "APCUPSD", "Prometheus"],
   "timezone": "browser",
   "schemaVersion": 38,

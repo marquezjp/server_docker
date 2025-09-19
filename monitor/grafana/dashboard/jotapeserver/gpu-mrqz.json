@@ -1,6 +1,6 @@
 {
   "title": "GPU NVIDIA RTX 4070 - MRQZ",
-  "uid": "gpu-dcgm-mrqz",
+  "uid": "gpu-mrqz",
   "tags": ["GPU","NVIDIA","DCGM","AI","Prometheus"],
   "timezone": "browser",
   "schemaVersion": 38,

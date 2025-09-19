@@ -1,6 +1,6 @@
 {
   "title": "Docker Engine - MRQZ",
-  "uid": "docker-engine-metrics-mrqz",
+  "uid": "docker-mrqz",
   "tags": ["Docker", "Docker Metrics", "Docker Engine", "Prometheus"],
   "timezone": "browser",
   "schemaVersion": 38,
