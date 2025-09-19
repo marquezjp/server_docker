@@ -154,6 +154,18 @@ services:
     networks:
       - proxy-network
 
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx-exporter
+    restart: unless-stopped
+    ports:
+      - "9113:9113"
+    command:
+      - --nginx.scrape-uri=http://nginx:8080/metrics
+      - --web.listen-address=:9113
+    networks:
+      - proxy-network
+
 volumes:
   portainer-data:
   prometheus-data:

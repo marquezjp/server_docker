@@ -1,0 +1,154 @@
+{
+  "title": "NGINX Proxy – MRQZ",
+  "uid": "nginx-mrqz",
+  "tags": ["NGINX", "Exporter", "Prometheus"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "style": "dark",
+  "refresh": "30s",
+  "editable": true,
+  "description": "Monitoramento do Proxy NGINX",
+
+  "weekStart": "",
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1726710000,
+  "links": [],
+  "liveNow": false,
+
+  "__inputs": [
+    { "name": "DS_PROMETHEUS", "label": "Prometheus", "type": "datasource", "pluginId": "prometheus", "pluginName": "Prometheus" }
+  ],
+
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": { "refresh_intervals": ["5s","10s","15s","30s","1m","5m","15m"] },
+
+  "panels": [
+    {
+      "title": "Exporter UP",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 },
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "up{job=\"nginx\"}", "legendFormat": "up", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "overrides": [],
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "index": 0, "text": "DOWN", "color": "red" }, "1": { "index": 1, "text": "UP", "color": "green" } } }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "title": "Conexões ativas",
+      "type": "gauge",
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 0 },
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "nginx_connections_active{job=\"nginx\"}", "legendFormat": "active", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 200 },
+              { "color": "red", "value": 350 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "min": 0,
+        "max": 500
+      }
+    },
+    {
+      "title": "Reading / Writing / Waiting",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "nginx_connections_reading{job=\"nginx\"}", "legendFormat": "reading", "refId": "A" },
+        { "expr": "nginx_connections_writing{job=\"nginx\"}", "legendFormat": "writing", "refId": "B" },
+        { "expr": "nginx_connections_waiting{job=\"nginx\"}", "legendFormat": "waiting", "refId": "C" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "none" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "right" } }
+    },
+    {
+      "title": "Requests por segundo (RPS)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "rate(nginx_http_requests_total{job=\"nginx\"}[5m]) or rate(nginx_requests_total{job=\"nginx\"}[5m])", "legendFormat": "RPS", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "overrides": [],
+        "defaults": {
+          "unit": "req/s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 100 },
+              { "color": "red", "value": 300 }
+            ]
+          }
+        }
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "right" } }
+    },
+    {
+      "title": "Métricas brutas (amostra)",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 18, "y":8 },
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "nginx_connections_active{job=\"nginx\"}", "legendFormat": "active", "refId": "A", "format": "time_series" },
+        { "expr": "nginx_connections_reading{job=\"nginx\"}", "legendFormat": "reading", "refId": "B", "format": "time_series" },
+        { "expr": "nginx_connections_writing{job=\"nginx\"}", "legendFormat": "writing", "refId": "C", "format": "time_series" },
+        { "expr": "nginx_connections_waiting{job=\"nginx\"}", "legendFormat": "waiting", "refId": "D", "format": "time_series" }
+      ],
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "options": { "showHeader": true }
+    }
+  ]
+}

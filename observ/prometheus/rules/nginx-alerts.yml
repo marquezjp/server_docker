@@ -1,0 +1,52 @@
+groups:
+  - name: nginx-basics
+    rules:
+
+    # Exporter/target fora do ar
+    - alert: NginxExporterDown
+      expr: up{job="nginx"} == 0
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "NGINX exporter indisponível (job={{ $labels.job }})"
+        description: "O alvo {{ $labels.instance }} do job {{ $labels.job }} está DOWN há 2 minutos."
+
+    # Conexões ativas muito altas (ajuste o limiar à sua realidade)
+    - alert: NginxActiveConnectionsHigh
+      expr: nginx_connections_active{job="nginx"} > 200
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Muitas conexões ativas no NGINX"
+        description: "nginx_connections_active={{ $value }} > 200 por 5m (ajuste o limite conforme sua carga)."
+
+    # Sem tráfego (requests/s) por período — usa o que existir: http_requests_total OU requests_total
+    - alert: NginxZeroRPS
+      expr: (rate(nginx_http_requests_total{job="nginx"}[5m]) or rate(nginx_requests_total{job="nginx"}[5m])) == 0
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Sem requisições no NGINX"
+        description: "Nenhuma requisição detectada pelo NGINX nos últimos 10 minutos."
+
+    # Picos de leitura ou escrita (fila/latência no accept ou upstream)
+    - alert: NginxReadingSpike
+      expr: nginx_connections_reading{job="nginx"} > 20
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Muitas conexões em leitura (client -> NGINX)"
+        description: "nginx_connections_reading={{ $value }} > 20 por 5m (ajuste o limite)."
+
+    - alert: NginxWritingSpike
+      expr: nginx_connections_writing{job="nginx"} > 50
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Muitas conexões em escrita (NGINX -> client)"
+        description: "nginx_connections_writing={{ $value }} > 50 por 5m (ajuste o limite)."
