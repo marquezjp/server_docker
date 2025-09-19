@@ -1,0 +1,42 @@
+groups:
+  - name: prometheus-alerts
+    rules:
+      # 1) Falhas ao Avaliar Regras
+      - alert: PrometheusRuleEvaluationFailures
+        expr: increase(prometheus_rule_evaluation_failures_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Falhas ao avaliar regras no Prometheus"
+          description: "Houve falha(s) na avaliação de regras nos últimos 5m. Verifique logs/configuração."
+
+      # 2) Prometheus sem Scrape de Targets
+      - alert: PrometheusTargetMissing
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Target do Prometheus indisponível ({{ $labels.job }})"
+          description: "O target {{ $labels.instance }} do job {{ $labels.job }} está DOWN há mais de 5m."
+
+      # 3) Alto Número de Séries Temporais Ativas
+      - alert: PrometheusHighSeriesCount
+        expr: prometheus_tsdb_head_series > 1e6
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Número elevado de séries no Prometheus"
+          description: "Prometheus está mantendo mais de 1 milhão de séries em memória por mais de 10m. Verifique jobs e labels."
+
+      # 4) Alto Tempo de Scrape (Lento para coletar)
+      - alert: PrometheusScrapeSlow
+        expr: prometheus_target_interval_length_seconds{quantile="0.9"} > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Scrape lento do Prometheus"
+          description: "90% dos scrapes do job {{ $labels.job }} estão levando mais de 10s por 5m."

@@ -1,5 +1,5 @@
 groups:
-  - name: nginx-basics
+  - name: nginx-alerts
     rules:
 
     # Exporter/target fora do ar

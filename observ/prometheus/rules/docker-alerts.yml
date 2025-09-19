@@ -1,0 +1,38 @@
+groups:
+  - name: docker-alerts
+    rules:
+      # 1) CPU Alta em Contêiner (cAdvisor)
+      # rate(container_cpu_usage_seconds_total) ≈ cores usados.
+      # Limiar >0.8 ~ >80% de 1 core por contêiner (ajuste conforme carga).
+      - alert: ContainerHighCPU
+        expr: sum by (instance, name) (rate(container_cpu_usage_seconds_total{image!=""}[5m])) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU alta no contêiner ({{ $labels.name }})"
+          description: "Uso de CPU > 0.8 core por 10m no contêiner {{ $labels.name }} (instância {{ $labels.instance }})."
+
+      # 2) Uso de Memória Alto em Contêiner (cAdvisor)
+      # (container_memory_usage_bytes{image!=""} / container_spec_memory_limit_bytes{image!=""}) > 0.9
+      # Usando > 90% do limite de memória por 5m. (ajuste conforme carga).
+      - alert: ContainerHighMemory
+        expr: (container_memory_usage_bytes{image!=""} / container_spec_memory_limit_bytes{image!=""}) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memória alta no contêiner ({{ $labels.name }})"
+          description: "Contêiner {{ $labels.name }} usando >90% do limite de memória por 5m."
+
+      # 3) Contêiner Reiniciando Frequentemente (cAdvisor)
+      # increase(container_restart_count_total[10m]) > 3
+      # reiniciou mais de 3 vezes nos últimos 10m.
+      - alert: ContainerRestartingFrequently
+        expr: increase(container_restart_count_total[10m]) > 3
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Reinícios frequentes do contêiner ({{ $labels.name }})"
+          description: "O contêiner {{ $labels.name }} reiniciou mais de 3 vezes nos últimos 10m. Verifique logs."
