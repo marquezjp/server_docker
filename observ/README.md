@@ -2,10 +2,10 @@
 
 ## Visão geral
 
-**Objetivo:** expor serviços por **subpaths** via NGINX, coletar **métricas** (Prometheus + exporters), **dashboards** (Grafana) e **logs** (Loki + Promtail).
+**Objetivo:** expor serviços por **Proxy** via NGINX, coletar **métricas** (Prometheus + exporters), **dashboards** (Grafana) e **logs** (Loki + Promtail).
 
 **Pilha principal**
-- **Reverse proxy:** NGINX (`/infra` Portainer, `/painel` Grafana, `/coletor` Prometheus, `/logs` Loki)
+- **Reverse proxy:** NGINX (`portainer.mrqz.me` Portainer, `grafana.mrqz.me` Grafana, `/coletor` Prometheus, `/logs/metrics` Loki)
 - **Métricas:** Prometheus, cAdvisor, Node Exporter, DCGM Exporter (GPU), APC UPSD Exporter, NGINX Exporter
 - **Dashboards:** Grafana (anônimo com role Viewer)
 - **Logs:** Loki (single-tenant) + Promtail (host + Docker)
@@ -14,8 +14,8 @@
 
 **URLs**
 - Cockpit: `https://cockpit.mrqz.me:9090`
-- Grafana: `https://mrqz.me/painel`
-- Portainer: `https://mrqz.me/infra`
+- Grafana: `https://grafana.mrqz.me`
+- Portainer: `https://portainer.mrqz.me`
 - Prometheus: `https://mrqz.me/coletor`
 - Loki (API via proxy): `https://mrqz.me/logs/…` (ex.: `/logs/metrics`)
 
@@ -40,8 +40,12 @@ observ/
 ├─ nginx/
 │  ├─ conf.d/
 │  │  ├─ 00-default.conf
-│  │  ├─ mrqz.me.conf
+│  │  ├─ 01-turning.conf
 │  │  ├─ map.conf
+│  │  ├─ mrqz.me.conf
+│  │  ├─ portainer.conf
+│  │  ├─ grafana.conf
+│  │  ├─ ollama.conf
 │  │  └─ nginx-status.conf
 │  ├─ snippets/
 │  │  ├─ proxy-common.conf
@@ -54,13 +58,22 @@ observ/
 ├─ prometheus/
 │  ├─ prometheus.yml
 │  └─ rules/
+│     ├─ docker-alerts.yml
 │     ├─ linux-alerts.yml
-│     ├─ prometheus-alerts.yml
-│     └─ nginx-alerts.yml
+│     ├─ nginx-alerts.yml
+│     └─ prometheus-alerts.yml
 ├─ grafana/
 │  └─ provisioning/
-│     └─ datasources/
-│        └─ loki.yml
+│     ├─ datasources/
+│     │  ├─ prometheus.yml
+│     │  └─ loki.yml
+│     └─ dashboards/
+│        └─ json/
+│           ├─ docker-mrqz.yml
+│           ├─ gpu-mrqz.yml
+│           ├─ proxy-nginx-mrqz.yml
+│           ├─ server-ubuntu-mrqz.yml
+│           └─ ups-mrqz.yml
 ├─ loki/
 │  └─ config.yml
 └─ promtail/
@@ -112,11 +125,11 @@ docker exec -it nginx nginx -s reload
 
 ### NGINX (proxy e subpaths)
 ```bash
-curl -I https://mrqz.me/             | head -n1   # 200
-curl -I https://mrqz.me/infra/       | head -n1   # 200/302 (login Portainer)
-curl -I https://mrqz.me/painel/      | head -n1   # 200/302 (/painel/login)
-curl -I https://mrqz.me/coletor/-/ready           # 200
-curl -I https://mrqz.me/logs/metrics              # 200
+curl -I https://mrqz.me/                 | head -n1   # 200
+curl -I https://portainer.mrqz.me/       | head -n1   # 200/302 (login Portainer)
+curl -I https://grafana.mrqz.me/painel/  | head -n1   # 200/302 (/painel/login)
+curl -I https://mrqz.me/coletor/-/ready               # 200
+curl -I https://mrqz.me/logs/metrics                  # 200
 ```
 
 ### Backends diretos (rede Docker)
@@ -138,17 +151,14 @@ docker exec -it nginx curl -s http://nginx:8080/metrics | head  # stub_status/me
 
 - **NGINX**
   - `nginx/conf.d/mrqz.me.conf`  
-    - Blocos `location ^~ /infra/`, `/painel/`, `/coletor/`, `/logs/`  
-    - **Não** coloque `/` no final do `proxy_pass` para Grafana/Prometheus (mantém subpath)!
+    - Blocos `location ^~ `/coletor/`, `/logs/`  
     - `proxy_redirect` ajustando URLs absolutas.
   - `nginx/snippets/ssl-mrqz.conf`  
     - `mrqz.me.fullchain.crt` = **cert + intermediárias** (SEM CA raiz).
     - `ssl_trusted_certificate` aponta para `ca.crt` (validação OCSP/chain).
-
-- **Grafana (subpath + anônimo)**
-  - `GF_SERVER_ROOT_URL=https://mrqz.me/painel/`
-  - `GF_SERVER_SERVE_FROM_SUB_PATH=true`
-  - `GF_AUTH_ANONYMOUS_ENABLED=true` / `GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer`
+  - `nginx/conf.d/portainer.me.conf`
+  - `nginx/conf.d/grafana.mrqz.me.conf`
+  - `nginx/conf.d/ollama.mrqz.me.conf`
 
 - **Prometheus (subpath)**
   - `--web.external-url=https://mrqz.me/coletor`

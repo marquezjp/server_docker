@@ -1,7 +1,7 @@
 groups:
   - name: linux-alerts
     rules:
-      # 1) Algum Target Caiu (qualquer job/instância)
+      # 1) Algum Target caiu (qualquer job/instância)
       - alert: TargetDown
         expr: up == 0
         for: 2m
@@ -11,8 +11,7 @@ groups:
           summary: "Target DOWN (job={{ $labels.job }}, instance={{ $labels.instance }})"
           description: "O alvo {{ $labels.instance }} do job {{ $labels.job }} está indisponível há 2m."
 
-      # 2) CPU Alta no Host
-      # 100 * (1 - %idle) por instância
+      # 2) CPU alta no host (100 * (1 - %idle))
       - alert: HostHighCPU
         expr: 100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m]))) > 85
         for: 10m
@@ -22,7 +21,7 @@ groups:
           summary: "CPU alta no host ({{ $labels.instance }})"
           description: "Uso de CPU > 85% por 10m (valor: {{ printf \"%.1f\" $value }}%)."
 
-      # 3) Memória Baixa no Host
+      # 3) Memória disponível baixa
       - alert: HostLowMemory
         expr: 100 * (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) < 10
         for: 10m
@@ -32,8 +31,7 @@ groups:
           summary: "Memória livre baixa ({{ $labels.instance }})"
           description: "Memória disponível < 10% por 10m (valor: {{ printf \"%.1f\" $value }}%)."
 
-      # 4) Disco Quase Cheio
-      # Ignora fstype efêmeros; ajuste lista conforme necessário
+      # 4) Disco quase cheio (ignora fs efêmeros)
       - alert: HostLowDiskSpace
         expr: 100 * (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs|nsfs|autofs"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs|nsfs|autofs"}) < 10
         for: 10m

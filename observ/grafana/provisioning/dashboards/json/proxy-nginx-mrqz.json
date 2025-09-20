@@ -1,0 +1,240 @@
+{
+  "title": "Proxy NGINX – MRQZ",
+  "uid": "proxy-nginx-mrqz",
+  "tags": ["NGINX", "Exporter", "Prometheus"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "style": "dark",
+  "refresh": "30s",
+  "editable": true,
+  "description": "Monitoramento do Proxy NGINX",
+
+  "weekStart": "",
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1726710000,
+  "links": [],
+  "liveNow": false,
+
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": { "refresh_intervals": ["5s","10s","15s","30s","1m","5m","15m"] },
+
+  "panels": [
+    {
+      "title": "Status",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "dscoletor" },
+      "targets": [
+        { "expr": "up{job=\"nginx\"}", "legendFormat": "up", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "overrides": [],
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "index": 0, "text": "DOWN", "color": "red" }, "1": { "index": 1, "text": "UP", "color": "green" } } }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "title": "RPS",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "dscoletor" },
+      "targets": [
+        { "expr": "sum(rate(nginx_http_requests_total{job=~\"nginx\"}[5m])) or sum(rate(nginx_requests_total{job=~\"nginx\"}[5m]))", "refId": "A" }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "min": 0,
+        "max": 5
+      },
+      "fieldConfig": {
+        "description": "Requests por segundo agregados do(s) Nginx (rate de 1m, protegido contra resets)",
+        "defaults": {
+          "unit": "req/s",
+          "decimals": 3,
+          "mappings": [ { "type": "special", "options": { "match": "null" }, "result": { "text": "Sem dados" } } ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green",  "value": null },
+              { "color": "yellow", "value": 3 },
+              { "color": "red",    "value": 4 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Estado",
+      "type": "bargauge",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "dscoletor" },
+      "targets": [
+        { "expr": "nginx_connections_reading{job=~\"nginx\"}", "legendFormat": "Leitura", "refId": "A" },
+        { "expr": "nginx_connections_writing{job=~\"nginx\"}", "legendFormat": "Escrita", "refId": "B" },
+        { "expr": "nginx_connections_waiting{job=~\"nginx\"}", "legendFormat": "Espera", "refId": "C" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              { "color": "#2E7D32", "value": null },
+              { "color": "#EF6C00", "value": 70 },
+              { "color": "#D32F2F", "value": 90 }
+            ]
+          },
+          "description": "Distribuição percentual de conexões (Leitura/Escrita/Espera) sobre o total ativo"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "orientation": "horizontal",
+        "legend": { "showLegend": false, "displayMode": "list", "placement": "bottom", "calcs": [] },
+        "displayMode": "basic",
+        "valueMode": "color",
+        "namePlacement": "auto",
+        "showUnfilled": true,
+        "sizing": "auto",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "maxVizHeight": 300
+      },
+      "pluginVersion": "12.1.1"
+    },
+    {
+      "title": "Ativas",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "dscoletor" },
+      "targets": [
+        { "expr": "nginx_connections_active{job=\"nginx\"}", "legendFormat": "Ativas", "refId": "A" }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "min": 0,
+        "max": 100
+      },
+      "fieldConfig": {
+        "description": "Soma das conexões ativas reportadas pelo(s) Nginx",
+        "defaults": {
+          "unit": "none",
+          "mappings": [ { "type": "special", "options": { "match": "null" }, "result": { "text": "Sem dados" } } ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 20 },
+              { "color": "red",   "value": 35 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Requisições por Segundo (RPS)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "dscoletor" },
+      "targets": [
+        { "expr": "rate(nginx_http_requests_total{job=\"nginx\"}[5m]) or rate(nginx_requests_total{job=\"nginx\"}[5m])", "legendFormat": "RPS", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "overrides": [],
+        "defaults": {
+          "unit": "req/s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 100 },
+              { "color": "red", "value": 300 }
+            ]
+          }
+        }
+      },
+      "options": { "legend": { "showLegend": false }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "title": "Leitura / Escrita / Espera",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "dscoletor" },
+      "targets": [
+        { "expr": "nginx_connections_reading{job=\"nginx\"}", "legendFormat": "reading", "refId": "A" },
+        { "expr": "nginx_connections_writing{job=\"nginx\"}", "legendFormat": "writing", "refId": "B" },
+        { "expr": "nginx_connections_waiting{job=\"nginx\"}", "legendFormat": "waiting", "refId": "C" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "none" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } }
+    },
+    {
+      "title": "Conexões Ativas",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "dscoletor" },
+      "targets": [
+        { "expr": "nginx_connections_active{job=~\"nginx\"}", "legendFormat": "Ativas", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "none" }, "overrides": [] },
+      "options": { "legend": { "showLegend": false }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "title": "Últimos Registros no Logs",
+      "type": "logs",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 14 },
+      "datasource": { "type": "loki", "uid": "dslogs" },
+      "targets": [
+        { "expr": "{container_name=\"nginx\"}", "queryType": "range", "refId": "A" }
+      ],
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": true,
+        "showCommonLabels": false,
+        "showLabels": false
+      }
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 services:
-  # Reverse proxy NGINX
+  # =========================
+  # PROXY REVERSO + SITE
+  # =========================
   nginx:
     image: nginx:alpine
     container_name: nginx
@@ -16,7 +18,11 @@ services:
       - ./nginx/site:/var/www/mrqz.me:ro
     networks:
       - proxy-network
+      - ollama-network 
 
+  # =========================
+  # GESTÃO
+  # =========================
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
@@ -26,36 +32,29 @@ services:
 #      - 8000:8000
 #      - 9000:9000
 #      - 9443:9443
-    environment:
-      ADMIN_PASSWORD: jquest
-    command:
-      # Se for publicar atrás de proxy via subpath 
-      - '--base-url=/infra'
+#    command:
+#      - '--base-url=/infra'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer-data:/data
     networks:
       - proxy-network
 
+  # =========================
+  # OBSERVABILIDADE
+  # =========================
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     restart: unless-stopped
-#    ports:
-#      - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=marquezjp
       - GF_SECURITY_ADMIN_PASSWORD=jquest
-      - GF_USERS_ALLOW_SIGN_UP=false
-      # Se for publicar atrás de proxy
-      #- GF_SERVER_ROOT_URL=https://grafana.mrqz.me
-      #- GF_SERVER_DOMAIN=grafana.mrqz.me
-      # Se for publicar atrás de proxy via subpath 
-      - GF_SERVER_ROOT_URL=https://mrqz.me/painel/
-      - GF_SERVER_SERVE_FROM_SUB_PATH=true
-      # Habilita Usuário Anônimo
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      #      - GF_SERVER_ROOT_URL=https://mrqz.me/painel/
+#      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+#      - GF_USERS_ALLOW_SIGN_UP=false
+#      - GF_AUTH_ANONYMOUS_ENABLED=true
+#      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana-data:/var/lib/grafana
@@ -66,11 +65,8 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     restart: unless-stopped
-#    ports:
-#      - "9091:9090"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9090/-/ready || exit 1"]
-#      test: ["CMD-SHELL", "exit 0"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:9090/coletor/-/ready > /dev/null || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -80,9 +76,7 @@ services:
       - '--storage.tsdb.path=/prometheus'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
-      # Retenção mais segura para não crescer infinito (ajuste conforme disco)
       - '--storage.tsdb.retention.time=30d'
-      # Se for publicar atrás de proxy via subpath 
       - '--web.external-url=https://mrqz.me/coletor'
       - '--web.route-prefix=/coletor'
     volumes:
@@ -91,6 +85,9 @@ services:
     networks:
       - proxy-network
 
+  # =========================
+  # EXPORTERS / AGENTES
+  # =========================
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
@@ -125,7 +122,6 @@ services:
     networks:
       - proxy-network
 
-# Exporta /metrics do apcupsd (rodando no host)
   apcupsd:
     image: jangrewe/apcupsd-exporter:latest
     container_name: apcupsd
@@ -139,14 +135,12 @@ services:
     restart: unless-stopped
     runtime: nvidia
     deploy:
-        resources:
-          reservations:
-            devices:
-              - capabilities: [gpu]
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
     cap_add:
       - SYS_ADMIN
-#    ports:
-#      - "9400:9400"
     environment:
       - DCGM_EXPORTER_LISTEN=0.0.0.0:9400
       - DCGM_EXPORTER_KUBERNETES=false
@@ -157,21 +151,20 @@ services:
     image: nginx/nginx-prometheus-exporter:latest
     container_name: nginx-exporter
     restart: unless-stopped
-    ports:
-      - "9113:9113"
     command:
       - --nginx.scrape-uri=http://nginx:8080/metrics
       - --web.listen-address=:9113
     networks:
       - proxy-network
 
+  # =========================
+  # LOGS (Loki + Promtail)
+  # =========================
   loki:
     image: grafana/loki:2.9.8
     container_name: loki
     restart: unless-stopped
     command: [ "-config.file=/etc/loki/config/config.yml" ]
-#    ports:
-#      - "3100:3100"
     volumes:
       - ./loki/config.yml:/etc/loki/config/config.yml:ro
       - loki-data:/loki
@@ -184,48 +177,26 @@ services:
     restart: unless-stopped
     command: [ "-config.file=/etc/promtail/config.yml" ]
     volumes:
-      # logs do Linux
-      - /var/log:/host/var/log:ro
-      # Descoberta Docker + leitura dos logs JSON dos containers
-      # logs JSON dos containers Docker
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      # acesso ao Docker para service discovery
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      # config do promtail
       - ./promtail/config.yml:/etc/promtail/config.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/log:/var/log:ro
+      - promtail-positions:/tmp
     networks:
       - proxy-network
 
+# =========================
+# VOLUMES / REDE
+# =========================
 volumes:
   portainer-data:
   prometheus-data:
   grafana-data:
   loki-data:
+  promtail-positions:
 
 networks:
   proxy-network:
     external: true
-
-# Gerar Autoridade Certificadora (CA) e Certificado Digital do Domínio
-# chmod +x ~/docker/nginx/certs/gerar-ca-cert.sh
-# ~/docker/nginx/certs/gerar-ca-cert.sh -d portainer.mrqz.me
-# ~/docker/nginx/certs/gerar-ca-cert.sh -d mrqz.me --wildcard --san "DNS:mrqz.me"
-# openssl s_client -connect portainer.mrqz.me:443 -servername portainer.mrqz.me </dev/null 2>/dev/null | openssl x509 -noout -text | grep -E 'Subject:|Issuer:|DNS:'
-
-# Importar CA local no cliente Windows
-# Import-Certificate -FilePath "P:\Projetos\JotaPeServer\certs\ca.crt" -CertStoreLocation "Cert:\LocalMachine\Root"
-# Win+R => mmc
-# Importar CA local no cliente Ubuntu
-# sudo cp ca.crt /usr/local/share/ca-certificates/mrqz-ca.crt
-# sudo update-ca-certificates
-# Validar o certificado
-# curl -I https://portainer.mrqz.me
-# curl -I https://portainer.mrqz.me --ssl-no-revoke
-# curl -vk https://portainer.mrqz.me
-
-# docker compose up -d
-# docker compose logs -f nginx
-
-# Validar & Recarregar NGINX
-# docker exec -it nginx nginx -t
-# docker exec -it nginx nginx -s reload
+  ollama-network:
+    external: true

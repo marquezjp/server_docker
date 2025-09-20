@@ -1,46 +1,62 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  # (opcional) rotule a origem desses dados
+  external_labels:
+    env: lab
+    node: jotapeserver
 
+# Carrega todas as regras em rules/*.yml
 rule_files:
   - rules/*.yml
 
 scrape_configs:
+  # -------- Prometheus (scrape direto, sem subpath)
   - job_name: 'prometheus'
-    # Se for publicar atrás de proxy via subpath 
     metrics_path: /coletor/metrics
     static_configs:
       - targets: ['prometheus:9090']
 
-  - job_name: 'cadvisor'
-    static_configs:
-      - targets: ['cadvisor:8080']
-
+  # -------- Node Exporter (Linux host)
   - job_name: 'node-exporter'
     static_configs:
       - targets: ['node-exporter:9100']
 
-  # Docker Engine metrics (opcional, se habilitar no daemon.json)
+  # -------- cAdvisor (containers)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+
+  # -------- Docker Engine (opcional; ative no daemon.json antes)
   - job_name: 'docker'
     static_configs:
       - targets: ['172.17.0.1:9323']
-    # /etc/docker/daemon.json
-    # {
-    #   "metrics-addr": "0.0.0.0:9323"
-    # }
-    # Dica: por segurança prefira "127.0.0.1:9323" e colete via host-gateway,
-    # adicionando um endpoint do node-exporter textfile ou um socat local.
+  #   /etc/docker/daemon.json no host:
+  #   {
+  #     "metrics-addr": "0.0.0.0:9323"
+  #   }
+  #   dica: prefira "127.0.0.1:9323" + host-gateway/socat se quiser expor só localmente
 
+  # -------- APC UPS Daemon exporter (no host)
   - job_name: 'apcupsd'
     static_configs:
       - targets: ['172.17.0.1:9162']
 
+  # -------- NVIDIA DCGM exporter (GPU)
   - job_name: 'dcgm-exporter'
-    static_configs:
-      - targets: ['dcgm-exporter:9400']
     metrics_path: /metrics
     scrape_timeout: 10s
+    static_configs:
+      - targets: ['dcgm-exporter:9400']
 
-  - job_name: 'nginx-exporter'
+  # -------- NGINX Prometheus Exporter (coleta do stub_status do NGINX)
+  # importante: 'job_name: nginx' para bater com os alertas job="nginx"
+  - job_name: 'nginx'
     static_configs:
       - targets: ['nginx-exporter:9113']
+
+  # -------- Loki (opcional, útil pra ver saúde/latência do Loki)
+  - job_name: 'loki'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['loki:3100']
